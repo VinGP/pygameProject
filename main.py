@@ -4,9 +4,17 @@ import pytmx
 
 TILE_SIZE = 64
 BLOCK_ID = (1, 2, 3, 4, 7, 8, 15, 16, 17, 18, 21, 22, 32, 33, 46, 47, 60, 61, 74, 75)
+WATER_ID = (5, 19)
+SPIKES_ID = (71,)
+LAVA_ID = (6, 20)
+STAIRS_ID = (57, 58)
 JUMP_POWER = 15
 
 block_group = pygame.sprite.Group()
+all_sprites = pygame.sprite.Group()
+water_group = pygame.sprite.Group()
+spikes_group = pygame.sprite.Group()
+stairs_group = pygame.sprite.Group()
 
 
 def load_image(name, color_key=None):
@@ -39,30 +47,32 @@ class Level:
             for y in range(self.height):
                 n = self.map.get_tile_gid(x, y, 0)
                 if n != 0:
-                    a = self.map.tiledgidmap[self.map.get_tile_gid(x, y, 0)]
-                    # print(a)
-                    if a in BLOCK_ID:
-                        img = self.map.get_tile_image(x, y, 0)
-                        # print(img)
-                        Block(x=x, y=y, img=img)
-                    # print(a)
+                    id = self.map.tiledgidmap[self.map.get_tile_gid(x, y, 0)]
+                    img = self.map.get_tile_image(x, y, 0)
+                    if id in BLOCK_ID:
+                        Block(x=x * TILE_SIZE, y=y * TILE_SIZE, img=img)
+                    elif id in WATER_ID:
+                        Water(x=x * TILE_SIZE, y=y * TILE_SIZE, img=img)
+                    elif id in SPIKES_ID:
+                        Spikes(x=x * TILE_SIZE, y=y * TILE_SIZE, img=img)
+                    elif id in LAVA_ID:
+                        Lava(x=x * TILE_SIZE, y=y * TILE_SIZE, img=img)
+                    elif id in STAIRS_ID:
+                        Stairs(x=x * TILE_SIZE, y=y * TILE_SIZE, img=img)
 
     def render(self, screen):
-
         for y in range(self.width):
             for x in range(self.height):
-
                 try:
                     image = self.map.get_tile_image(x, y, 0)
                 except Exception:
                     continue
-                # print(image)
                 if image is not None:
                     screen.blit(image, (self.tile_size * x, self.tile_size * y))
 
 
 class Hero(pygame.sprite.Sprite):
-    def __init__(self, sheet, columns, rows, x, y):
+    def __init__(self, sheet, columns, rows, x, y, speed=5):
         super().__init__(all_sprites)
         self.frames = []
         self.cut_sheet(sheet, columns, rows)
@@ -77,7 +87,7 @@ class Hero(pygame.sprite.Sprite):
 
         self.sprite_update_time = 100
 
-        self.speed = 5
+        self.speed = speed
 
         self.xvel = 0
         self.yvel = 0
@@ -101,26 +111,20 @@ class Hero(pygame.sprite.Sprite):
         # self.image = self.frames[self.cur_frame]
 
     def move(self):
+        # print(self.yvel, self.onGround, self.rect.y)
         if not self.moving_left and not self.moving_right:
             self.xvel = 0
         if self.moving_left:
-            # self.rect.move_ip(-self.speed, 0)
             self.xvel = -self.speed
-            # self.moving_right = False
 
         if self.moving_right:
-            # self.rect.move_ip(self.speed, 0)
             self.xvel = self.speed
-            # self.moving_left = False
 
         if not self.onGround:
             self.yvel += self.gravity
         if self.jump:
             if self.onGround:
                 self.yvel = -JUMP_POWER
-        #
-
-        #     self.rect.move_ip()
 
         self.onGround = False
 
@@ -134,10 +138,8 @@ class Hero(pygame.sprite.Sprite):
             if pygame.sprite.collide_rect(self, block):
                 if xvel > 0:
                     self.rect.right = block.rect.left
-                    # self.moving_right = False
                 if xvel < 0:
                     self.rect.left = block.rect.right
-                    # self.moving_left = False
                 if yvel > 0:
                     self.rect.bottom = block.rect.top
                     self.onGround = True
@@ -151,14 +153,52 @@ class Block(pygame.sprite.Sprite):
     def __init__(self, x, y, img):
         pygame.sprite.Sprite.__init__(self, all_sprites, block_group)
         self.image = img
-        # self.rect = self.image.get_rect()
-        self.rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
 
 
 class Health:
     """
     Класс для отображения здоровь
     """
+
+
+class Water(pygame.sprite.Sprite):
+    def __init__(self, img, x, y):
+        super().__init__(all_sprites, water_group)
+
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
+
+
+class Lava(pygame.sprite.Sprite):
+    def __init__(self, img, x, y):
+        super().__init__(all_sprites, water_group)
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
+
+
+class Spikes(pygame.sprite.Sprite):
+    """Шипы"""
+
+    def __init__(self, img, x, y):
+        super().__init__(all_sprites, water_group)
+
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
+
+
+class Stairs(pygame.sprite.Sprite):
+    """Лестница"""
+
+    def __init__(self, img, x, y):
+        super().__init__(all_sprites, stairs_group)
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
 
 
 class Camera:
@@ -180,11 +220,10 @@ class Camera:
 
 pygame.init()
 pygame.display.set_caption("Название")
-size = width, height = 600, 500
+size = width, height = 900, 500
 # size = width, height = 2000, 2000
 
 screen = pygame.display.set_mode(size)
-all_sprites = pygame.sprite.Group()
 
 camera = Camera()
 
@@ -199,8 +238,9 @@ hero = Hero(
     load_image("hero.png"),
     1,
     1,
-    level.width // 2 * TILE_SIZE,
-    level.height * TILE_SIZE - TILE_SIZE,
+    TILE_SIZE,
+    (level.height - 3) * TILE_SIZE - TILE_SIZE,
+    speed=7
 )
 
 if __name__ == "__main__":
