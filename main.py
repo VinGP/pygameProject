@@ -159,7 +159,10 @@ class Hero(pygame.sprite.Sprite):
         if pygame.sprite.spritecollide(self, spikes_group, False):
             self.jump = True
             self.onGround = True
-        elif not pygame.sprite.spritecollide(self, spikes_group, False) and not pygame.key.get_pressed()[pygame.K_w]:
+        elif (
+            not pygame.sprite.spritecollide(self, spikes_group, False)
+            and not pygame.key.get_pressed()[pygame.K_w]
+        ):
             self.jump = False
             self.onGround = False
         #     print("111")
@@ -218,16 +221,7 @@ class Spikes(pygame.sprite.Sprite):
         self.image = img
         self.image = pygame.Surface((TILE_SIZE, TILE_SIZE // 2))
         self.image.blit(img, (0, -TILE_SIZE // 2))
-        # self.rect = self.image.get_rect()
         self.rect = pygame.Rect(x, y + TILE_SIZE // 2, TILE_SIZE, TILE_SIZE)
-        # self.rect = pygame.Rect(x, y + TILE_SIZE//2, TILE_SIZE, TILE_SIZE//2)
-        # self.rect = pygame.Rect(x, y + TILE_SIZE // 2, TILE_SIZE, TILE_SIZE // 2)
-        # self.rect = self.image.get_rect()
-        # self.pseudo_rect = self.rect.inflate(5, 5)
-        # self.rect = self.rect.inflate(0, -TILE_SIZE//2)
-
-        # self.ratio =
-        # self.rect = self.rect.inflate(0, -TILE_SIZE//2)
 
 
 class Stairs(pygame.sprite.Sprite):
@@ -246,6 +240,7 @@ class Camera:
         self.dx = 0
         self.dy = 0
         self.t = t
+        self.state = pygame.Rect(0, 0, level_width, level_height)
 
     # сдвинуть объект obj на смещение камеры
     def apply(self, obj):
@@ -254,34 +249,26 @@ class Camera:
 
     # позиционировать камеру на объекте target
     def update(self, target):
-        print(target.rect.x, target.rect.y)
-        print(self.t.rect.x, target.rect.x)
-        if 0 >= self.t.rect.x:
-            self.dx = 0
-        # else:
-        #     self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
-        # self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
-        x = abs(self.t.rect.x) + width // 2
-        y = abs(self.t.rect.y) + height // 2
-        print(x, y)
-        # if
-        if 0 > self.t.rect.x:
-            # self.dx = 0
-            self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
-        elif self.t.rect.x == 0:
-            pass
-        else:
-            self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
-
+        self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
         self.dy = -(target.rect.y + target.rect.h // 2 - height // 2)
-        # print(self.dx, self.dy, target.rect.x, target.rect.y)
+        if self.t.rect.x + self.dx > 0:
+            self.dx = -1 * self.t.rect.x
+        elif abs(self.t.rect.x + self.dx) + width > level_width:
+            self.dx = abs(self.t.rect.x) + width - level_width
+
+        if abs(self.t.rect.y + self.dy) + height > level_height - 1:
+            self.dy = abs(self.t.rect.y) + height - level_height
+        elif self.t.rect.y + self.dy > 0:
+            self.dy = -self.t.rect.y
 
 
 class T(pygame.sprite.Sprite):
+    """Класс для отслеживания точки (0,0) уровня.
+    Необходим для правильного позиционирования камеры"""
+
     def __init__(self, x, y):
         super().__init__(all_sprites)
         self.image = pygame.Surface((0, 0))
-        # self.rect = self.image.get_rect()
         self.rect = pygame.Rect(x, y, 0, 0)
 
 
@@ -292,18 +279,13 @@ size = width, height = 1000, 700
 
 screen = pygame.display.set_mode(size)
 
-"""
-0 0
-403 -5827
-403 -5827
-"""
 
 GRAVITY = 0.6
 
 fps = 60
 t = T(0, 0)
 clock = pygame.time.Clock()
-level = Level(filename="data/map.tmx")
+level = Level(filename="data/map_test_cam.tmx")
 # hero = Hero(load_image("hero_tiles.png"), 4, 2, level.width // 2 * TILE_SIZE, level.height * TILE_SIZE - TILE_SIZE)
 hero = Hero(
     load_image("hero.png"),
@@ -363,6 +345,3 @@ if __name__ == "__main__":
         clock.tick(fps)
         pygame.display.flip()
     pygame.quit()
-
-
-
