@@ -110,11 +110,8 @@ class Hero(pygame.sprite.Sprite):
 
     def update(self):
         self.move()
-        # self.cur_frame = (self.cur_frame + 1) % len(self.frames)
-        # self.image = self.frames[self.cur_frame]
 
     def move(self):
-        # print(self.yvel, self.onGround, self.rect.y)
         if not self.moving_left and not self.moving_right:
             self.xvel = 0
         if self.moving_left:
@@ -271,7 +268,6 @@ hero = Hero(
     speed=7
 )
 
-# all_sprites.add(t)
 level_height = level.map.height * TILE_SIZE
 level_width = level.map.width * TILE_SIZE
 
