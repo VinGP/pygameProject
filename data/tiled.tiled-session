@@ -8,11 +8,11 @@
     ],
     "fileStates": {
         "map.tmx": {
-            "scale": 0.2553125,
+            "scale": 0.0625,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1176.9889840881274,
-                "y": 887.1481028151775
+                "x": 632,
+                "y": 1976
             }
         },
         "platformPack_tilesheet.tsx": {
