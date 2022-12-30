@@ -1,14 +1,13 @@
 import pygame
 import os
 import pytmx
+from constants import *
 
-TILE_SIZE = 64
-BLOCK_ID = (1, 2, 3, 4, 7, 8, 15, 16, 17, 18, 21, 22, 32, 33, 46, 47, 60, 61, 74, 75)
-WATER_ID = (5, 19)
-SPIKES_ID = (71,)
-LAVA_ID = (6, 20)
-STAIRS_ID = (57, 58)
-JUMP_POWER = 15
+pygame.init()
+pygame.display.set_caption("Название")
+screen = pygame.display.set_mode(SIZE)
+
+clock = pygame.time.Clock()
 
 block_group = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
@@ -36,7 +35,6 @@ def load_image(name, color_key=None):
 class Level:
     def __init__(self, filename):
         self.map = pytmx.load_pygame(filename)
-        print(self.map.images)
 
         self.height = self.map.height
         self.width = self.map.width
@@ -222,15 +220,15 @@ class Camera:
 
     # позиционировать камеру на объекте target
     def update(self, target):
-        self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
-        self.dy = -(target.rect.y + target.rect.h // 2 - height // 2)
+        self.dx = -(target.rect.x + target.rect.w // 2 - WIDTH // 2)
+        self.dy = -(target.rect.y + target.rect.h // 2 - HEIGHT // 2)
         if self.t.rect.x + self.dx > 0:
             self.dx = -1 * self.t.rect.x
-        elif abs(self.t.rect.x + self.dx) + width > level_width:
-            self.dx = abs(self.t.rect.x) + width - level_width
+        elif abs(self.t.rect.x + self.dx) + WIDTH > level_width:
+            self.dx = abs(self.t.rect.x) + WIDTH - level_width
 
-        if abs(self.t.rect.y + self.dy) + height > level_height - 1:
-            self.dy = abs(self.t.rect.y) + height - level_height
+        if abs(self.t.rect.y + self.dy) + HEIGHT > level_height - 1:
+            self.dy = abs(self.t.rect.y) + HEIGHT - level_height
         elif self.t.rect.y + self.dy > 0:
             self.dy = -self.t.rect.y
 
@@ -245,18 +243,6 @@ class T(pygame.sprite.Sprite):
         self.rect = pygame.Rect(x, y, 0, 0)
 
 
-pygame.init()
-pygame.display.set_caption("Название")
-size = width, height = 1000, 700
-# size = width, height = 2000, 2000
-
-screen = pygame.display.set_mode(size)
-
-GRAVITY = 0.6
-
-fps = 60
-t = T(0, 0)
-clock = pygame.time.Clock()
 level = Level(filename="data/map.tmx")
 # hero = Hero(load_image("hero_tiles.png"), 4, 2, level.width // 2 * TILE_SIZE, level.height * TILE_SIZE - TILE_SIZE)
 hero = Hero(
@@ -265,13 +251,13 @@ hero = Hero(
     1,
     TILE_SIZE,
     (level.height - 3) * TILE_SIZE - TILE_SIZE,
-    speed=7
+    speed=HERO_SPEED,
 )
 
 level_height = level.map.height * TILE_SIZE
 level_width = level.map.width * TILE_SIZE
 
-camera = Camera(t)
+camera = Camera(T(0, 0))
 
 if __name__ == "__main__":
 
@@ -312,6 +298,6 @@ if __name__ == "__main__":
             camera.apply(sprite)
         all_sprites.draw(screen)
         all_sprites.update()
-        clock.tick(fps)
+        clock.tick(FPS)
         pygame.display.flip()
     pygame.quit()
