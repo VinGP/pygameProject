@@ -79,7 +79,7 @@ class Hero(pygame.sprite.Sprite):
         self.cut_sheet(sheet, columns, rows)
         self.cur_frame = 0
         self.image = self.frames[self.cur_frame]
-        self.rect = self.rect.move(x, y)
+
         self.gravity = GRAVITY
 
         self.jump = False
@@ -95,6 +95,15 @@ class Hero(pygame.sprite.Sprite):
 
         self.onGround = False
 
+        self.animation_list = []
+        self.frame_index = 0
+        self.action = 0
+
+        self.load_animation()
+        print(self.animation_list[0][0].get_width())
+        self.rect = self.image.get_rect()
+        self.rect = self.rect.move(x, y)
+
     def cut_sheet(self, sheet, columns, rows):
         self.rect = pygame.Rect(
             0, 0, sheet.get_width() // columns, sheet.get_height() // rows
@@ -106,8 +115,29 @@ class Hero(pygame.sprite.Sprite):
                     sheet.subsurface(pygame.Rect(frame_location, self.rect.size))
                 )
 
+    def load_animation(self):
+        animation_types = ["idle", "climb", "jump", "walk"]
+        for animation in animation_types:
+            # reset temporary list of images
+            temp_list = []
+            # count number of files in the folder
+            num_of_frames = len(os.listdir(f"data/hero_/{animation}"))
+            for i in range(num_of_frames):
+                img = load_image(f"hero\{animation}\{animation}{i}.png")
+                # img = pygame.image.load(
+                #     f"data/hero/{animation}{i}.png"
+                # ).convert_alpha()
+                # img = pygame.transform.scale(
+                #     img, (int(img.get_width() * scale), int(img.get_height() * scale))
+                # )
+                temp_list.append(img)
+            self.animation_list.append(temp_list)
+
+        self.image = self.animation_list[self.action][self.frame_index]
+
     def update(self):
         self.move()
+        self.update_animation()
 
     def move(self):
         if not self.moving_left and not self.moving_right:
@@ -124,14 +154,14 @@ class Hero(pygame.sprite.Sprite):
             if self.onGround:
                 self.yvel = -JUMP_POWER
 
-        self.onGround = False
-
         self.rect.x += self.xvel
         self.collide(self.xvel, 0)
         self.rect.y += self.yvel
         self.collide(0, self.yvel)
 
     def collide(self, xvel, yvel):
+        self.onGround = False
+
         for block in block_group:
             if pygame.sprite.collide_rect(self, block):
                 if xvel > 0:
@@ -141,10 +171,24 @@ class Hero(pygame.sprite.Sprite):
                 if yvel > 0:
                     self.rect.bottom = block.rect.top
                     self.onGround = True
-                    self.yvel = 0
+                    self.yvel = 1
                 if yvel < 0:
                     self.rect.top = block.rect.bottom
                     self.yvel = 0
+
+    def update_animation(self):
+        if not self.onGround:
+            self.image = self.animation_list[2][self.cur_frame]
+            self.cur_frame = (self.cur_frame + 1) % len(self.animation_list[2])
+        else:
+            self.image = self.animation_list[0][0]
+        # self.image = self.animation_list[0][0]
+        # print(self.rect.bottomleft)
+        # print(self.rect)
+        # self.rect = self.image.get_rect()
+        # self.rect = pygame.Rect(
+        #     self.rect.x, self.rect.y, self.image.get_rect().width, self.image.get_rect().height
+        # )
 
 
 class Block(pygame.sprite.Sprite):
@@ -189,11 +233,15 @@ class Spikes(pygame.sprite.Sprite):
 
     def __init__(self, img, x, y):
         super().__init__(all_sprites, spikes_group)
+        #
+        # self.image = img
+        # self.image = pygame.Surface((TILE_SIZE, TILE_SIZE // 2))
+        # self.image.blit(img, (0, -TILE_SIZE // 2))
+        # self.rect = pygame.Rect(x, y + TILE_SIZE // 2, TILE_SIZE, TILE_SIZE)
 
         self.image = img
-        self.image = pygame.Surface((TILE_SIZE, TILE_SIZE // 2))
-        self.image.blit(img, (0, -TILE_SIZE // 2))
-        self.rect = pygame.Rect(x, y + TILE_SIZE // 2, TILE_SIZE, TILE_SIZE)
+        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
 
 
 class Stairs(pygame.sprite.Sprite):
@@ -265,7 +313,8 @@ if __name__ == "__main__":
     running = True
 
     while running:
-        screen.fill((0, 0, 0))
+        # screen.fill((0, 0, 0))
+        screen.fill(pygame.Color("blue"))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False

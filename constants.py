@@ -8,9 +8,16 @@ STAIRS_ID = (57, 58)
 SIZE = WIDTH, HEIGHT = 1000, 700
 # size = width, height = 2000, 2000
 
+# JUMP_POWER = 15
+# GRAVITY = 0.6
+#
+# FPS = 80
+#
+# HERO_SPEED = 6
+
 JUMP_POWER = 15
 GRAVITY = 0.6
 
-FPS = 80
+FPS = 70
 
 HERO_SPEED = 6
