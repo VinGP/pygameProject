@@ -73,20 +73,17 @@ class Level:
 class Hero(pygame.sprite.Sprite):
     """Главного героя игры"""
 
-    def __init__(self, sheet, columns, rows, x, y, speed=5):
+    def __init__(self, animation_pictures_folder, x, y, speed=5, animation_cooldown=100):
         super().__init__(all_sprites)
         self.frames = []
-        self.cut_sheet(sheet, columns, rows)
-        self.cur_frame = 0
-        self.image = self.frames[self.cur_frame]
-
+        self.animation_pictures_folder = animation_pictures_folder
         self.gravity = GRAVITY
 
         self.jump = False
         self.moving_left = False
         self.moving_right = False
 
-        self.sprite_update_time = 100
+        self.animation_cooldown = animation_cooldown  # Частота обновления анимации
 
         self.speed = speed
 
@@ -96,47 +93,36 @@ class Hero(pygame.sprite.Sprite):
         self.onGround = False
 
         self.animation_list = []
-        self.frame_index = 0
+        self.cur_frame = 0
         self.action = 0
+        self.update_time = pygame.time.get_ticks()
+        """
+        Action:
+        0 - idle
+        1 - climb
+        2 - jump
+        3 - walk
+        """
 
         self.load_animation()
-        print(self.animation_list[0][0].get_width())
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(x, y)
-
-    def cut_sheet(self, sheet, columns, rows):
-        self.rect = pygame.Rect(
-            0, 0, sheet.get_width() // columns, sheet.get_height() // rows
-        )
-        for j in range(rows):
-            for i in range(columns):
-                frame_location = (self.rect.w * i, self.rect.h * j)
-                self.frames.append(
-                    sheet.subsurface(pygame.Rect(frame_location, self.rect.size))
-                )
 
     def load_animation(self):
         animation_types = ["idle", "climb", "jump", "walk"]
         for animation in animation_types:
-            # reset temporary list of images
             temp_list = []
-            # count number of files in the folder
-            num_of_frames = len(os.listdir(f"data/hero_/{animation}"))
+            num_of_frames = len(os.listdir(f"data/{self.animation_pictures_folder}/{animation}"))
             for i in range(num_of_frames):
-                img = load_image(f"hero\{animation}\{animation}{i}.png")
-                # img = pygame.image.load(
-                #     f"data/hero/{animation}{i}.png"
-                # ).convert_alpha()
-                # img = pygame.transform.scale(
-                #     img, (int(img.get_width() * scale), int(img.get_height() * scale))
-                # )
+                img = load_image(f"{self.animation_pictures_folder}\{animation}\{animation}{i}.png")
                 temp_list.append(img)
             self.animation_list.append(temp_list)
 
-        self.image = self.animation_list[self.action][self.frame_index]
+        self.image = self.animation_list[self.action][self.cur_frame]
 
     def update(self):
         self.move()
+        self.update_action()
         self.update_animation()
 
     def move(self):
@@ -176,19 +162,25 @@ class Hero(pygame.sprite.Sprite):
                     self.rect.top = block.rect.bottom
                     self.yvel = 0
 
-    def update_animation(self):
+    def update_action(self):
         if not self.onGround:
-            self.image = self.animation_list[2][self.cur_frame]
-            self.cur_frame = (self.cur_frame + 1) % len(self.animation_list[2])
+            new_action = 2
+        elif self.moving_right or self.moving_left:
+            new_action = 3
         else:
-            self.image = self.animation_list[0][0]
-        # self.image = self.animation_list[0][0]
-        # print(self.rect.bottomleft)
-        # print(self.rect)
-        # self.rect = self.image.get_rect()
-        # self.rect = pygame.Rect(
-        #     self.rect.x, self.rect.y, self.image.get_rect().width, self.image.get_rect().height
-        # )
+            new_action = 0
+        if new_action != self.action:
+            self.action = new_action
+            self.cur_frame = 0
+
+    def update_animation(self):
+        if pygame.time.get_ticks() - self.update_time > self.animation_cooldown:
+            self.update_time = pygame.time.get_ticks()
+            self.image = self.animation_list[self.action][self.cur_frame]
+            self.cur_frame = (self.cur_frame + 1) % len(self.animation_list[self.action])
+
+            if self.moving_left:
+                self.image = pygame.transform.flip(self.image, True, False)
 
 
 class Block(pygame.sprite.Sprite):
@@ -233,12 +225,6 @@ class Spikes(pygame.sprite.Sprite):
 
     def __init__(self, img, x, y):
         super().__init__(all_sprites, spikes_group)
-        #
-        # self.image = img
-        # self.image = pygame.Surface((TILE_SIZE, TILE_SIZE // 2))
-        # self.image.blit(img, (0, -TILE_SIZE // 2))
-        # self.rect = pygame.Rect(x, y + TILE_SIZE // 2, TILE_SIZE, TILE_SIZE)
-
         self.image = img
         self.rect = self.image.get_rect()
         self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
@@ -292,14 +278,12 @@ class T(pygame.sprite.Sprite):
 
 
 level = Level(filename="data/map.tmx")
-# hero = Hero(load_image("hero_tiles.png"), 4, 2, level.width // 2 * TILE_SIZE, level.height * TILE_SIZE - TILE_SIZE)
 hero = Hero(
-    load_image("hero.png"),
-    1,
-    1,
+    "hero",
     TILE_SIZE,
     (level.height - 3) * TILE_SIZE - TILE_SIZE,
     speed=HERO_SPEED,
+    animation_cooldown=ANIMATION_COOLDOWN,
 )
 
 level_height = level.map.height * TILE_SIZE
@@ -313,13 +297,12 @@ if __name__ == "__main__":
     running = True
 
     while running:
-        # screen.fill((0, 0, 0))
-        screen.fill(pygame.Color("blue"))
+        screen.fill((0, 0, 0))
+        # screen.fill(pygame.Color("blue"))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-            # keyboard presses
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
                     hero.moving_left = True
@@ -331,7 +314,6 @@ if __name__ == "__main__":
                 if event.key == pygame.K_ESCAPE:
                     run = False
 
-            # keyboard button released
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
                     hero.moving_left = False

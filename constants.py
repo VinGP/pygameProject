@@ -6,18 +6,12 @@ LAVA_ID = (6, 20)
 STAIRS_ID = (57, 58)
 
 SIZE = WIDTH, HEIGHT = 1000, 700
-# size = width, height = 2000, 2000
-
-# JUMP_POWER = 15
-# GRAVITY = 0.6
-#
-# FPS = 80
-#
-# HERO_SPEED = 6
 
 JUMP_POWER = 15
 GRAVITY = 0.6
 
-FPS = 70
+FPS = 75
 
-HERO_SPEED = 6
+HERO_SPEED = 6  # Скорость передвижения героя
+
+ANIMATION_COOLDOWN = 100  # Частота обновления анимации
