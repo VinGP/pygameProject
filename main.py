@@ -1,7 +1,10 @@
+import time
+
 import pygame
 import os
 import pytmx
 from constants import *
+from abc import ABC
 
 pygame.init()
 pygame.display.set_caption("Название")
@@ -15,6 +18,26 @@ water_group = pygame.sprite.Group()
 spikes_group = pygame.sprite.Group()
 stairs_group = pygame.sprite.Group()
 lava_group = pygame.sprite.Group()
+
+
+class Abstract_Item(pygame.sprite.Sprite, ABC):
+    def __init__(self, image, x, y, *sprite_group):
+        super().__init__(*sprite_group)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
+
+    @property
+    def hit_box(self):
+        pass
+
+    @hit_box.setter
+    def hit_box(self, val):
+        pass
+
+    @hit_box.getter
+    def hit_box(self):
+        return None
 
 
 def load_image(name, color_key=None):
@@ -108,6 +131,9 @@ class Hero(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(x, y)
 
+        self.hit_box = pygame.Rect(0, 0, self.image.get_width() - 16, self.image.get_height() - 30)
+        self.hit_box.bottom = self.rect.bottom
+
     def load_animation(self):
         animation_types = ["idle", "climb", "jump", "walk"]
         for animation in animation_types:
@@ -125,6 +151,11 @@ class Hero(pygame.sprite.Sprite):
         self.update_action()
         self.update_animation()
 
+    def draw(self, screen):
+        pygame.draw.rect(screen, (255, 0, 0), self.hit_box, 2)
+        pygame.draw.rect(screen, (0, 255, 0), self.rect, 2)
+        pygame.draw.rect(screen, (0, 0, 255), self.rect, 2)
+
     def move(self):
         if not self.moving_left and not self.moving_right:
             self.xvel = 0
@@ -141,25 +172,31 @@ class Hero(pygame.sprite.Sprite):
                 self.yvel = -JUMP_POWER
 
         self.rect.x += self.xvel
+        self.hit_box.midbottom = self.rect.midbottom
+
         self.collide(self.xvel, 0)
+
         self.rect.y += self.yvel
+        self.hit_box.y += self.yvel
+        self.rect.midbottom = self.hit_box.midbottom
         self.collide(0, self.yvel)
+        self.rect.midbottom = self.hit_box.midbottom
 
     def collide(self, xvel, yvel):
         self.onGround = False
 
         for block in block_group:
-            if pygame.sprite.collide_rect(self, block):
+            if self.hit_box.colliderect(block.rect):
                 if xvel > 0:
-                    self.rect.right = block.rect.left
+                    self.hit_box.right = block.rect.left
                 if xvel < 0:
-                    self.rect.left = block.rect.right
+                    self.hit_box.left = block.rect.right
                 if yvel > 0:
-                    self.rect.bottom = block.rect.top
+                    self.hit_box.bottom = block.rect.top
                     self.onGround = True
                     self.yvel = 1
                 if yvel < 0:
-                    self.rect.top = block.rect.bottom
+                    self.hit_box.top = block.rect.bottom
                     self.yvel = 0
 
     def update_action(self):
@@ -329,6 +366,9 @@ if __name__ == "__main__":
             camera.apply(sprite)
         all_sprites.draw(screen)
         all_sprites.update()
+
+        hero.draw(screen)
+        print(clock.get_fps())
         clock.tick(FPS)
         pygame.display.flip()
     pygame.quit()
