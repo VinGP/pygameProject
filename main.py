@@ -20,24 +20,18 @@ stairs_group = pygame.sprite.Group()
 lava_group = pygame.sprite.Group()
 
 
-class Abstract_Item(pygame.sprite.Sprite, ABC):
-    def __init__(self, image, x, y, *sprite_group):
-        super().__init__(*sprite_group)
+class AbstractSprite(pygame.sprite.Sprite, ABC):
+    def __init__(self, image, x, y, sprite_groups: list[pygame.sprite.Group]):
+        super().__init__(*sprite_groups)
         self.image = image
         self.rect = self.image.get_rect()
-        self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
+        self.rect.x, self.rect.y = x, y
+        self.hit_box = self.rect.copy()
+        # у каждого наследника должен быть
+        # этот атрибут. По его значению будут вычисляться коллизии
 
-    @property
-    def hit_box(self):
-        pass
-
-    @hit_box.setter
-    def hit_box(self, val):
-        pass
-
-    @hit_box.getter
-    def hit_box(self):
-        return None
+    def update(self):
+        self.hit_box.midbottom = self.rect.midbottom
 
 
 def load_image(name, color_key=None):
@@ -96,9 +90,10 @@ class Level:
 class Hero(pygame.sprite.Sprite):
     """Главного героя игры"""
 
-    def __init__(self, animation_pictures_folder, x, y, speed=5, animation_cooldown=100):
+    def __init__(
+        self, animation_pictures_folder, x, y, speed=5, animation_cooldown=100
+    ):
         super().__init__(all_sprites)
-        self.frames = []
         self.animation_pictures_folder = animation_pictures_folder
         self.gravity = GRAVITY
 
@@ -115,6 +110,8 @@ class Hero(pygame.sprite.Sprite):
 
         self.onGround = False
 
+        self.t = T(x, y)
+
         self.animation_list = []
         self.cur_frame = 0
         self.action = 0
@@ -128,28 +125,38 @@ class Hero(pygame.sprite.Sprite):
         """
 
         self.load_animation()
+        self.image = self.animation_list[self.action][self.cur_frame]
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(x, y)
 
-        self.hit_box = pygame.Rect(0, 0, self.image.get_width() - 16, self.image.get_height() - 30)
+        self.hit_box = pygame.Rect(
+            0, 0, self.image.get_width() - 18, self.image.get_height() - 30
+        )
         self.hit_box.bottom = self.rect.bottom
 
     def load_animation(self):
         animation_types = ["idle", "climb", "jump", "walk"]
         for animation in animation_types:
             temp_list = []
-            num_of_frames = len(os.listdir(f"data/{self.animation_pictures_folder}/{animation}"))
+            num_of_frames = len(
+                os.listdir(f"data/{self.animation_pictures_folder}/{animation}")
+            )
             for i in range(num_of_frames):
-                img = load_image(f"{self.animation_pictures_folder}\{animation}\{animation}{i}.png")
+                img = load_image(
+                    f"{self.animation_pictures_folder}\{animation}\{animation}{i}.png"
+                )
                 temp_list.append(img)
             self.animation_list.append(temp_list)
 
-        self.image = self.animation_list[self.action][self.cur_frame]
-
     def update(self):
+
         self.move()
         self.update_action()
         self.update_animation()
+
+        self.hit_box.midbottom = self.rect.midbottom
+
+        # self.draw(screen)
 
     def draw(self, screen):
         pygame.draw.rect(screen, (255, 0, 0), self.hit_box, 2)
@@ -186,18 +193,35 @@ class Hero(pygame.sprite.Sprite):
         self.onGround = False
 
         for block in block_group:
-            if self.hit_box.colliderect(block.rect):
+            if self.hit_box.colliderect(block.hit_box):
                 if xvel > 0:
-                    self.hit_box.right = block.rect.left
+                    self.hit_box.right = block.hit_box.left
                 if xvel < 0:
-                    self.hit_box.left = block.rect.right
+                    self.hit_box.left = block.hit_box.right
                 if yvel > 0:
-                    self.hit_box.bottom = block.rect.top
+                    self.hit_box.bottom = block.hit_box.top
                     self.onGround = True
                     self.yvel = 1
                 if yvel < 0:
-                    self.hit_box.top = block.rect.bottom
+                    self.hit_box.top = block.hit_box.bottom
                     self.yvel = 0
+        for water in water_group:
+            if self.hit_box.colliderect(water.hit_box):
+                self.rect.move_ip(
+                    -(self.rect.x - self.t.rect.x), -(self.rect.y - self.t.rect.y)
+                )
+                self.hit_box.midbottom = self.rect.midbottom
+
+        for lava in lava_group:
+            if self.hit_box.colliderect(lava.hit_box):
+                self.rect.move_ip(
+                    -(self.rect.x - self.t.rect.x), -(self.rect.y - self.t.rect.y)
+                )
+                self.hit_box.midbottom = self.rect.midbottom
+
+        for spikes in spikes_group:
+            if self.hit_box.colliderect(spikes.hit_box):
+                print("spikes")
 
     def update_action(self):
         if not self.onGround:
@@ -214,20 +238,19 @@ class Hero(pygame.sprite.Sprite):
         if pygame.time.get_ticks() - self.update_time > self.animation_cooldown:
             self.update_time = pygame.time.get_ticks()
             self.image = self.animation_list[self.action][self.cur_frame]
-            self.cur_frame = (self.cur_frame + 1) % len(self.animation_list[self.action])
+            self.cur_frame = (self.cur_frame + 1) % len(
+                self.animation_list[self.action]
+            )
 
             if self.moving_left:
                 self.image = pygame.transform.flip(self.image, True, False)
 
 
-class Block(pygame.sprite.Sprite):
+class Block(AbstractSprite):
     """Блок"""
 
     def __init__(self, x, y, img):
-        pygame.sprite.Sprite.__init__(self, all_sprites, block_group)
-        self.image = img
-        self.rect = self.image.get_rect()
-        self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
+        super().__init__(img, x, y, [all_sprites, block_group])
 
 
 class Health:
@@ -236,45 +259,43 @@ class Health:
     """
 
 
-class Water(pygame.sprite.Sprite):
+class Water(AbstractSprite):
     """Вода"""
 
-    def __init__(self, img, x, y):
-        super().__init__(all_sprites, water_group)
-
-        self.image = img
-        self.rect = self.image.get_rect()
-        self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
+    def __init__(self, x, y, img):
+        super().__init__(img, x, y, [all_sprites, water_group])
 
 
-class Lava(pygame.sprite.Sprite):
+class Lava(AbstractSprite):
     """Лава"""
 
-    def __init__(self, img, x, y):
-        super().__init__(all_sprites, lava_group)
-        self.image = img
-        self.rect = self.image.get_rect()
-        self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
+    def __init__(self, x, y, img):
+        super().__init__(img, x, y, [all_sprites, lava_group])
 
 
-class Spikes(pygame.sprite.Sprite):
+class Spikes(AbstractSprite):
     """Шипы"""
 
-    def __init__(self, img, x, y):
-        super().__init__(all_sprites, spikes_group)
-        self.image = img
-        self.rect = self.image.get_rect()
-        self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
+    def __init__(self, x, y, img):
+        super().__init__(img, x, y, [all_sprites, spikes_group])
+        self.hit_box = pygame.Rect(
+            0,
+            0 + self.image.get_height() // 2,
+            self.image.get_width(),
+            self.image.get_height() // 2,
+        )
+        self.hit_box.bottom = self.rect.bottom
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, (255, 0, 0), self.hit_box, 2)
+        pygame.draw.rect(screen, (0, 255, 0), self.rect, 2)
 
 
-class Stairs(pygame.sprite.Sprite):
+class Stairs(AbstractSprite):
     """Лестница"""
 
     def __init__(self, img, x, y):
-        super().__init__(all_sprites, stairs_group)
-        self.image = img
-        self.rect = self.image.get_rect()
-        self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
+        super().__init__(img, x, y, [all_sprites, spikes_group])
 
 
 class Camera:
@@ -367,8 +388,6 @@ if __name__ == "__main__":
         all_sprites.draw(screen)
         all_sprites.update()
 
-        hero.draw(screen)
-        print(clock.get_fps())
         clock.tick(FPS)
         pygame.display.flip()
     pygame.quit()
