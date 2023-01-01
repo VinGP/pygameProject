@@ -2,7 +2,6 @@ import pygame
 import os
 import pytmx
 from constants import *
-from abc import ABC
 
 pygame.init()
 pygame.display.set_caption("Название")
@@ -18,7 +17,7 @@ stairs_group = pygame.sprite.Group()
 lava_group = pygame.sprite.Group()
 
 
-class AbstractSprite(pygame.sprite.Sprite, ABC):
+class AbstractSprite(pygame.sprite.Sprite):
     def __init__(self, image, x, y, sprite_groups: list[pygame.sprite.Group]):
         super().__init__(*sprite_groups)
         self.image = image
