@@ -8,11 +8,11 @@
     ],
     "fileStates": {
         "map.tmx": {
-            "scale": 0.0625,
+            "scale": 0.33,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 632,
-                "y": 1976
+                "x": 1037.878787878788,
+                "y": 5631.818181818182
             }
         },
         "map_test_cam.tmx": {
@@ -38,8 +38,8 @@
     ],
     "project": "tiled.tiled-project",
     "recentFiles": [
-        "platformPack_tilesheet.tsx",
-        "map.tmx"
+        "map.tmx",
+        "platformPack_tilesheet.tsx"
     ],
     "resizeMap.removeObjects": true,
     "tileset.lastUsedFormat": "tsx",

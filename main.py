@@ -89,7 +89,7 @@ class Hero(pygame.sprite.Sprite):
     """Главного героя игры"""
 
     def __init__(
-        self, animation_pictures_folder, x, y, speed=5, animation_cooldown=100
+            self, animation_pictures_folder, x, y, speed=5, animation_cooldown=100
     ):
         super().__init__(all_sprites)
         self.animation_pictures_folder = animation_pictures_folder
@@ -257,10 +257,10 @@ class Hero(pygame.sprite.Sprite):
             if self.on_stairs:
                 self.image = self.animation_list[self.action][self.cur_frame]
                 if (
-                    self.moving_down
-                    or self.moving_up
-                    and pygame.time.get_ticks() - self.update_time
-                    > self.animation_cooldown * 2
+                        self.moving_down
+                        or self.moving_up
+                        and pygame.time.get_ticks() - self.update_time
+                        > self.animation_cooldown * 2
                 ):
                     self.update_time = pygame.time.get_ticks()
                     self.cur_frame = (self.cur_frame + 1) % len(
