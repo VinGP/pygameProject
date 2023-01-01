@@ -95,9 +95,13 @@ class Hero(pygame.sprite.Sprite):
         self.animation_pictures_folder = animation_pictures_folder
         self.gravity = GRAVITY
 
-        self.jump = False
         self.moving_left = False
         self.moving_right = False
+
+        self.moving_up = False
+        self.moving_down = False
+
+        self.on_stairs = False  # герой на лестнице
 
         self.animation_cooldown = animation_cooldown  # Частота обновления анимации
 
@@ -170,11 +174,18 @@ class Hero(pygame.sprite.Sprite):
         if self.moving_right:
             self.xvel = self.speed
 
-        if not self.onGround:
+        if not self.onGround and not self.on_stairs:
             self.yvel += self.gravity
-        if self.jump:
+        if self.moving_up:
             if self.onGround:
                 self.yvel = -JUMP_POWER
+        if self.on_stairs:
+            if self.moving_up:
+                self.yvel = -self.speed
+            elif self.moving_down:
+                self.yvel = self.speed
+            else:
+                self.yvel = 0
 
         self.rect.x += self.xvel
         self.hit_box.midbottom = self.rect.midbottom
@@ -183,12 +194,14 @@ class Hero(pygame.sprite.Sprite):
 
         self.rect.y += self.yvel
         self.hit_box.y += self.yvel
+
         self.rect.midbottom = self.hit_box.midbottom
         self.collide(0, self.yvel)
         self.rect.midbottom = self.hit_box.midbottom
 
     def collide(self, xvel, yvel):
         self.onGround = False
+        self.on_stairs = False
 
         for block in block_group:
             if self.hit_box.colliderect(block.hit_box):
@@ -221,9 +234,16 @@ class Hero(pygame.sprite.Sprite):
             if self.hit_box.colliderect(spikes.hit_box):
                 print("spikes")
 
+        for stairs in stairs_group:
+            if self.hit_box.colliderect(stairs.hit_box):
+                self.on_stairs = True
+                self.onGround = False
+
     def update_action(self):
-        if not self.onGround:
+        if not self.onGround and not self.on_stairs:
             new_action = 2
+        elif self.on_stairs:
+            new_action = 1
         elif self.moving_right or self.moving_left:
             new_action = 3
         else:
@@ -234,11 +254,24 @@ class Hero(pygame.sprite.Sprite):
 
     def update_animation(self):
         if pygame.time.get_ticks() - self.update_time > self.animation_cooldown:
-            self.update_time = pygame.time.get_ticks()
-            self.image = self.animation_list[self.action][self.cur_frame]
-            self.cur_frame = (self.cur_frame + 1) % len(
-                self.animation_list[self.action]
-            )
+            if self.on_stairs:
+                self.image = self.animation_list[self.action][self.cur_frame]
+                if (
+                    self.moving_down
+                    or self.moving_up
+                    and pygame.time.get_ticks() - self.update_time
+                    > self.animation_cooldown * 2
+                ):
+                    self.update_time = pygame.time.get_ticks()
+                    self.cur_frame = (self.cur_frame + 1) % len(
+                        self.animation_list[self.action]
+                    )
+            else:
+                self.image = self.animation_list[self.action][self.cur_frame]
+                self.update_time = pygame.time.get_ticks()
+                self.cur_frame = (self.cur_frame + 1) % len(
+                    self.animation_list[self.action]
+                )
 
             if self.moving_left:
                 self.image = pygame.transform.flip(self.image, True, False)
@@ -293,7 +326,7 @@ class Stairs(AbstractSprite):
     """Лестница"""
 
     def __init__(self, img, x, y):
-        super().__init__(img, x, y, [all_sprites, spikes_group])
+        super().__init__(img, x, y, [all_sprites, stairs_group])
 
 
 class Camera:
@@ -364,11 +397,10 @@ if __name__ == "__main__":
                     hero.moving_left = True
                 if event.key == pygame.K_d:
                     hero.moving_right = True
-
-                if event.key == pygame.K_w and hero.alive:
-                    hero.jump = True
-                if event.key == pygame.K_ESCAPE:
-                    run = False
+                if event.key == pygame.K_w:
+                    hero.moving_up = True
+                if event.key == pygame.K_s:
+                    hero.moving_down = True
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
@@ -376,7 +408,9 @@ if __name__ == "__main__":
                 if event.key == pygame.K_d:
                     hero.moving_right = False
                 if event.key == pygame.K_w:
-                    hero.jump = False
+                    hero.moving_up = False
+                if event.key == pygame.K_s:
+                    hero.moving_down = False
 
         # изменяем ракурс камеры
         camera.update(hero)
