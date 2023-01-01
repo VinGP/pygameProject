@@ -243,8 +243,6 @@ class Hero(pygame.sprite.Sprite):
             if self.hit_box.colliderect(spikes.hit_box):
                 if self.spike_jump:
                     break
-                print("spikes")
-                # self.moving_up = True
                 self.spike_jump = True
                 self.health.health -= 0.5
                 break
