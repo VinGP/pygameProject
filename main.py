@@ -94,11 +94,15 @@ class Hero(pygame.sprite.Sprite):
         self.animation_pictures_folder = animation_pictures_folder
         self.gravity = GRAVITY
 
+        self.health = Health(3)
+
         self.moving_left = False
         self.moving_right = False
 
         self.moving_up = False
         self.moving_down = False
+
+        self.spike_jump = False  # Прыжок от шипов
 
         self.on_stairs = False  # герой на лестнице
 
@@ -117,6 +121,7 @@ class Hero(pygame.sprite.Sprite):
         self.cur_frame = 0
         self.action = 0
         self.update_time = pygame.time.get_ticks()
+
         """
         Action:
         0 - idle
@@ -178,6 +183,9 @@ class Hero(pygame.sprite.Sprite):
         if self.moving_up:
             if self.onGround:
                 self.yvel = -JUMP_POWER
+        if self.spike_jump:
+            self.yvel = -JUMP_POWER
+
         if self.on_stairs:
             if self.moving_up:
                 self.yvel = -self.speed
@@ -221,6 +229,7 @@ class Hero(pygame.sprite.Sprite):
                     -(self.rect.x - self.t.rect.x), -(self.rect.y - self.t.rect.y)
                 )
                 self.hit_box.midbottom = self.rect.midbottom
+                self.health.health -= 1
 
         for lava in lava_group:
             if self.hit_box.colliderect(lava.hit_box):
@@ -228,10 +237,19 @@ class Hero(pygame.sprite.Sprite):
                     -(self.rect.x - self.t.rect.x), -(self.rect.y - self.t.rect.y)
                 )
                 self.hit_box.midbottom = self.rect.midbottom
+                self.health.health -= 1
 
         for spikes in spikes_group:
             if self.hit_box.colliderect(spikes.hit_box):
+                if self.spike_jump:
+                    break
                 print("spikes")
+                # self.moving_up = True
+                self.spike_jump = True
+                self.health.health -= 0.5
+                break
+        else:
+            self.spike_jump = False
 
         for stairs in stairs_group:
             if self.hit_box.colliderect(stairs.hit_box):
@@ -287,6 +305,22 @@ class Health:
     """
     Класс для отображения здоровья
     """
+
+    def __init__(self, health):
+        self.health = health
+        self.full_health_img = load_image(
+            fr"health\0.png"
+        )
+
+        self.half_health_img = load_image(
+            fr"health\2.png"
+        )
+
+    def draw(self, screen):
+        for i in range(int(self.health)):
+            screen.blit(self.full_health_img, (TILE_SIZE * i, 0))
+        if int(self.health * 10 % 10) != 0:
+            screen.blit(self.half_health_img, (TILE_SIZE * int(self.health * 10 // 10), 0))
 
 
 class Water(AbstractSprite):
@@ -419,6 +453,8 @@ if __name__ == "__main__":
         all_sprites.draw(screen)
         all_sprites.update()
 
+        hero.health.draw(screen)
+        # print(clock.get_fps())
         clock.tick(FPS)
         pygame.display.flip()
     pygame.quit()
