@@ -89,7 +89,7 @@ class Hero(pygame.sprite.Sprite):
     """Главного героя игры"""
 
     def __init__(
-        self, animation_pictures_folder, x, y, speed=5, animation_cooldown=100
+            self, animation_pictures_folder, x, y, speed=5, animation_cooldown=100
     ):
         super().__init__(all_sprites)
         self.animation_pictures_folder = animation_pictures_folder
@@ -221,6 +221,10 @@ class Hero(pygame.sprite.Sprite):
             if self.hit_box.colliderect(spikes.hit_box):
                 print("spikes")
 
+        for stairs in stairs_group:
+            if self.hit_box.colliderect(stairs.hit_box):
+                print("stairs")
+
     def update_action(self):
         if not self.onGround:
             new_action = 2
@@ -293,7 +297,7 @@ class Stairs(AbstractSprite):
     """Лестница"""
 
     def __init__(self, img, x, y):
-        super().__init__(img, x, y, [all_sprites, spikes_group])
+        super().__init__(img, x, y, [all_sprites, stairs_group])
 
 
 class Camera:
