@@ -330,6 +330,9 @@ class Hero(pygame.sprite.Sprite):
             if self.moving_left:
                 self.image = pygame.transform.flip(self.image, True, False)
 
+    def is_alive(self):
+        return self.health.health > 0
+
 
 class Block(AbstractSprite):
     """Блок"""
@@ -350,10 +353,10 @@ class Health:
 
     def draw(self, screen):
         for i in range(int(self.health)):
-            screen.blit(self.full_health_img, (TILE_SIZE * i, 0))
+            screen.blit(self.full_health_img, (TILE_SIZE // 2 * i, 0))
         if int(self.health * 10 % 10) != 0:
             screen.blit(
-                self.half_health_img, (TILE_SIZE * int(self.health * 10 // 10), 0)
+                self.half_health_img, (TILE_SIZE // 2 * int(self.health * 10 // 10), 0)
             )
 
 
