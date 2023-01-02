@@ -88,7 +88,7 @@ class Hero(pygame.sprite.Sprite):
     """Главного героя игры"""
 
     def __init__(
-            self, animation_pictures_folder, x, y, speed=5, animation_cooldown=100
+        self, animation_pictures_folder, x, y, speed=5, animation_cooldown=100
     ):
         super().__init__(all_sprites)
         self.animation_pictures_folder = animation_pictures_folder
@@ -149,7 +149,7 @@ class Hero(pygame.sprite.Sprite):
             )
             for i in range(num_of_frames):
                 img = load_image(
-                    f"{self.animation_pictures_folder}\{animation}\{animation}{i}.png"
+                    f"{self.animation_pictures_folder}\\{animation}\\{animation}{i}.png"
                 )
                 temp_list.append(img)
             self.animation_list.append(temp_list)
@@ -272,10 +272,10 @@ class Hero(pygame.sprite.Sprite):
             if self.on_stairs:
                 self.image = self.animation_list[self.action][self.cur_frame]
                 if (
-                        self.moving_down
-                        or self.moving_up
-                        and pygame.time.get_ticks() - self.update_time
-                        > self.animation_cooldown * 2
+                    self.moving_down
+                    or self.moving_up
+                    and pygame.time.get_ticks() - self.update_time
+                    > self.animation_cooldown * 2
                 ):
                     self.update_time = pygame.time.get_ticks()
                     self.cur_frame = (self.cur_frame + 1) % len(
@@ -306,19 +306,16 @@ class Health:
 
     def __init__(self, health):
         self.health = health
-        self.full_health_img = load_image(
-            fr"health\0.png"
-        )
-
-        self.half_health_img = load_image(
-            fr"health\2.png"
-        )
+        self.full_health_img = load_image(rf"health\0.png")
+        self.half_health_img = load_image(rf"health\2.png")
 
     def draw(self, screen):
         for i in range(int(self.health)):
             screen.blit(self.full_health_img, (TILE_SIZE * i, 0))
         if int(self.health * 10 % 10) != 0:
-            screen.blit(self.half_health_img, (TILE_SIZE * int(self.health * 10 // 10), 0))
+            screen.blit(
+                self.half_health_img, (TILE_SIZE * int(self.health * 10 // 10), 0)
+            )
 
 
 class Water(AbstractSprite):
@@ -415,7 +412,9 @@ if __name__ == "__main__":
 
     screen.fill((0, 0, 0))
     running = True
-    background = pygame.transform.scale(load_image(LEVEL_BACKGROUND_IMAGE), (WIDTH, HEIGHT))
+    background = pygame.transform.scale(
+        load_image(LEVEL_BACKGROUND_IMAGE), (WIDTH, HEIGHT)
+    )
     while running:
         # screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
