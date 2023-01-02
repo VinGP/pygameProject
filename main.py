@@ -15,6 +15,37 @@ water_group = pygame.sprite.Group()
 spikes_group = pygame.sprite.Group()
 stairs_group = pygame.sprite.Group()
 lava_group = pygame.sprite.Group()
+crystal_group = pygame.sprite.Group()
+
+
+class AbstractBonus(pygame.sprite.Sprite):
+    def __init__(self, image, x, y, sprite_groups: list[pygame.sprite.Group]):
+        super().__init__(*sprite_groups)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = x, y
+        self.hit_box = self.rect.copy()
+        # у каждого наследника должен быть
+        # этот атрибут. По его значению будут вычисляться коллизии
+
+    def update(self):
+        self.hit_box.midbottom = self.rect.midbottom
+
+
+class BonusCrystal(AbstractBonus):
+    def __init__(self, img, x, y):
+        super().__init__(img, x, y, [all_sprites, crystal_group])
+        self.hit_box = self.rect.inflate(-36, -36)
+
+    def update(self):
+        self.hit_box.center = self.rect.center
+        # self.draw(screen)
+
+    def draw(self, screen):
+        # screen.blit(self.rect)
+        pygame.draw.rect(screen, (255, 0, 0), self.hit_box, 2)
+        pygame.draw.rect(screen, (0, 255, 0), self.rect, 2)
+        pygame.draw.rect(screen, (0, 0, 255), self.rect, 2)
 
 
 class AbstractSprite(pygame.sprite.Sprite):
@@ -72,6 +103,8 @@ class Level:
                         Lava(x=x * TILE_SIZE, y=y * TILE_SIZE, img=img)
                     elif id in STAIRS_ID:
                         Stairs(x=x * TILE_SIZE, y=y * TILE_SIZE, img=img)
+                    elif id in CRYSTAL_ID:
+                        BonusCrystal(x=x * TILE_SIZE, y=y * TILE_SIZE, img=img)
 
     def render(self, screen):
         for y in range(self.width):
@@ -88,13 +121,15 @@ class Hero(pygame.sprite.Sprite):
     """Главного героя игры"""
 
     def __init__(
-        self, animation_pictures_folder, x, y, speed=5, animation_cooldown=100
+            self, animation_pictures_folder, x, y, speed=5, animation_cooldown=100
     ):
         super().__init__(all_sprites)
         self.animation_pictures_folder = animation_pictures_folder
         self.gravity = GRAVITY
 
         self.health = Health(3)
+
+        self.crystal_counter = CrystalCounter(0, TILE_SIZE // 2, 16, load_image(r"Bonuses\Crystal\0.png"))
 
         self.moving_left = False
         self.moving_right = False
@@ -117,6 +152,7 @@ class Hero(pygame.sprite.Sprite):
 
         self.t = T(x, y)
 
+        self.animation_types = ["idle", "climb", "jump", "walk"]
         self.animation_list = []
         self.cur_frame = 0
         self.action = 0
@@ -141,8 +177,7 @@ class Hero(pygame.sprite.Sprite):
         self.hit_box.bottom = self.rect.bottom
 
     def load_animation(self):
-        animation_types = ["idle", "climb", "jump", "walk"]
-        for animation in animation_types:
+        for animation in self.animation_types:
             temp_list = []
             num_of_frames = len(
                 os.listdir(f"data/{self.animation_pictures_folder}/{animation}")
@@ -155,13 +190,12 @@ class Hero(pygame.sprite.Sprite):
             self.animation_list.append(temp_list)
 
     def update(self):
-
         self.move()
+
         self.update_action()
         self.update_animation()
 
         self.hit_box.midbottom = self.rect.midbottom
-
         # self.draw(screen)
 
     def draw(self, screen):
@@ -254,6 +288,11 @@ class Hero(pygame.sprite.Sprite):
                 self.on_stairs = True
                 self.onGround = False
 
+        for crystal in crystal_group:
+            if self.hit_box.colliderect(crystal.hit_box):
+                self.crystal_counter.collect_crystal()
+                crystal.kill()
+
     def update_action(self):
         if not self.onGround and not self.on_stairs:
             new_action = 2
@@ -272,10 +311,10 @@ class Hero(pygame.sprite.Sprite):
             if self.on_stairs:
                 self.image = self.animation_list[self.action][self.cur_frame]
                 if (
-                    self.moving_down
-                    or self.moving_up
-                    and pygame.time.get_ticks() - self.update_time
-                    > self.animation_cooldown * 2
+                        self.moving_down
+                        or self.moving_up
+                        and pygame.time.get_ticks() - self.update_time
+                        > self.animation_cooldown * 2
                 ):
                     self.update_time = pygame.time.get_ticks()
                     self.cur_frame = (self.cur_frame + 1) % len(
@@ -316,6 +355,26 @@ class Health:
             screen.blit(
                 self.half_health_img, (TILE_SIZE * int(self.health * 10 // 10), 0)
             )
+
+
+class CrystalCounter:
+    def __init__(self, x, y, count_crystals, crystal_image):
+        self.count_crystals = count_crystals
+        self.collected_crystals = 0
+        self.image = crystal_image
+        self.x = x
+        self.y = y
+        self.font = pygame.font.Font(None, int(TILE_SIZE * 0.8))
+
+    def collect_crystal(self):
+        self.collected_crystals += 1
+
+    def draw(self, screen):
+        screen.blit(self.image, (self.x, self.y))
+        text = self.font.render(f"{self.collected_crystals}/{self.count_crystals}", True, pygame.color.Color("black"))
+        text_x = self.x + self.image.get_width()
+        text_y = self.y + (self.image.get_height() - text.get_height()) // 2
+        screen.blit(text, (text_x, text_y))
 
 
 class Water(AbstractSprite):
@@ -452,6 +511,8 @@ if __name__ == "__main__":
         all_sprites.update()
 
         hero.health.draw(screen)
+        hero.crystal_counter.draw(screen)
+
         # print(clock.get_fps())
         clock.tick(FPS)
         pygame.display.flip()
