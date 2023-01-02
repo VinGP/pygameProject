@@ -15,3 +15,5 @@ FPS = 75
 HERO_SPEED = 6.5  # Скорость передвижения героя
 
 ANIMATION_COOLDOWN = 100  # Частота обновления анимации
+
+LEVEL_BACKGROUND_IMAGE = "background_2.png"

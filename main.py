@@ -415,10 +415,11 @@ if __name__ == "__main__":
 
     screen.fill((0, 0, 0))
     running = True
-
+    background = pygame.transform.scale(load_image(LEVEL_BACKGROUND_IMAGE), (WIDTH, HEIGHT))
     while running:
-        screen.fill((0, 0, 0))
-        # screen.fill(pygame.Color("blue"))
+        # screen.fill((0, 0, 0))
+        screen.blit(background, (0, 0))
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
