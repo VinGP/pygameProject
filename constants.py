@@ -12,6 +12,7 @@ CRYSTAL_ID = (36, 37, 38, 39, 50, 51, 52, 53)
 
 SIZE = WIDTH, HEIGHT = 1000, 700
 SCREEN = pygame.display.set_mode(SIZE)
+pygame.display.set_caption("pygameProject")
 
 JUMP_POWER = 15
 GRAVITY = 0.6
