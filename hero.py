@@ -1,6 +1,8 @@
 from constants import *
 from health import Health
 import os
+
+from state import LevelState
 from tools import load_image, T
 
 
@@ -76,6 +78,9 @@ class Hero(pygame.sprite.Sprite):
                 temp_list.append(img)
             self.animation_list.append(temp_list)
 
+    def is_alive(self):
+        return self.health.health > 0
+
     def update(self):
 
         self.move()
@@ -84,12 +89,12 @@ class Hero(pygame.sprite.Sprite):
 
         self.hit_box.midbottom = self.rect.midbottom
 
-        # self.draw(screen)
+        # self.draw()
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, (255, 0, 0), self.hit_box, 2)
-        pygame.draw.rect(screen, (0, 255, 0), self.rect, 2)
-        pygame.draw.rect(screen, (0, 0, 255), self.rect, 2)
+    def draw(self):
+        pygame.draw.rect(SCREEN, (255, 0, 0), self.hit_box, 2)
+        pygame.draw.rect(SCREEN, (0, 255, 0), self.rect, 2)
+        pygame.draw.rect(SCREEN, (0, 0, 255), self.rect, 2)
 
     def move(self):
         if not self.moving_left and not self.moving_right:
@@ -180,6 +185,10 @@ class Hero(pygame.sprite.Sprite):
             if self.hit_box.colliderect(crystal.hit_box):
                 self.level.crystal_counter.collect_crystal()
                 crystal.kill()
+
+        for finish in self.level.finish_group:
+            if self.hit_box.colliderect(finish.hit_box):
+                self.level.state = LevelState.Win
 
     def update_action(self):
         if not self.onGround and not self.on_stairs:

@@ -3,6 +3,7 @@ import pytmx
 from blocks import *
 from bonuses import *
 from hero import Hero
+from state import LevelState
 from tools import load_image, T
 from constants import *
 
@@ -22,6 +23,7 @@ class Level:
         self.stairs_group = pygame.sprite.Group()
         self.lava_group = pygame.sprite.Group()
         self.crystal_group = pygame.sprite.Group()
+        self.finish_group = pygame.sprite.Group()
 
         self.crystal_counter = None
 
@@ -46,6 +48,7 @@ class Level:
         self.background = pygame.transform.scale(
             load_image(LEVEL_BACKGROUND_IMAGE), (WIDTH, HEIGHT)
         )
+        self.state = LevelState.Run
 
     def load_level(self):
         for x in range(self.width):
@@ -97,10 +100,23 @@ class Level:
                             img=img,
                             sprite_groups=[self.all_sprites, self.crystal_group],
                         )
+                    elif id in FINISH_ID:
+                        Finish(
+                            x=x * TILE_SIZE,
+                            y=y * TILE_SIZE,
+                            image=img,
+                            sprite_groups=[self.all_sprites, self.finish_group],
+                        )
 
-    def update(self, events):
+    def check_state(self):
+        if not self.hero.is_alive():
+            self.state = LevelState.Lose
+
+    def get_state(self):
+        return self.state
+
+    def render(self, events):
         SCREEN.blit(self.background, (0, 0))
-
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
@@ -130,5 +146,5 @@ class Level:
         self.all_sprites.draw(SCREEN)
         self.all_sprites.update()
         self.hero.health.draw(SCREEN)
-        if self.crystal_counter:
-            self.crystal_counter.draw(screen=SCREEN)
+        self.crystal_counter.draw(screen=SCREEN)
+        self.check_state()

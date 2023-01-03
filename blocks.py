@@ -55,3 +55,12 @@ class Stairs(AbstractSprite):
 
     def __init__(self, img, x, y, sprite_groups):
         super().__init__(img, x, y, sprite_groups)
+
+
+class Finish(AbstractSprite):
+    def __init__(self, image, x, y, sprite_groups: list[pygame.sprite.Group]):
+        super().__init__(image, x, y, sprite_groups)
+        self.hit_box = self.rect.inflate(-40, -40)
+
+    def update(self):
+        self.hit_box.center = self.rect.center

@@ -28,6 +28,7 @@
             "scaleInEditor": 1
         }
     },
+    "frame.defaultDuration": 40,
     "last.imagePath": "D:/MyProjects/pygameProject/data/block",
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 64,
