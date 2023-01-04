@@ -9,7 +9,7 @@ from constants import *
 
 
 class Level:
-    def __init__(self, level_id, level_map_file_path):
+    def __init__(self, level_id, level_map_file_path, count_crystals):
         self.level_id = level_id
         self.map = pytmx.load_pygame(level_map_file_path)
         self.height = self.map.height
@@ -30,9 +30,9 @@ class Level:
         self.crystal_counter_img = load_image(r"Bonuses\Crystal\0.png")
 
         self.load_level()
-
+        self.count_all_crystal = count_crystals
         self.crystal_counter = CrystalCounter(
-            0, TILE_SIZE // 2, 16, self.crystal_counter_img
+            0, TILE_SIZE // 2, count_crystals, self.crystal_counter_img
         )
 
         self.hero = Hero(
@@ -114,6 +114,15 @@ class Level:
 
     def get_state(self):
         return self.state
+
+    def get_result(self):
+        if self.crystal_counter.collected_crystals == self.count_all_crystal:
+            return 3
+        if self.crystal_counter.collected_crystals > self.count_all_crystal // 2:
+            return 2
+        if self.crystal_counter.collected_crystals > 0:
+            return 1
+        return 0
 
     def render(self, events):
         SCREEN.blit(self.background, (0, 0))

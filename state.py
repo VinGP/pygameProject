@@ -2,13 +2,14 @@ from enum import Enum
 
 
 class GameState(Enum):
-    MainManu = 0
-    LevelManu = 1
+    MainMenu = 0
+    LevelMenu = 1
     PlayLevel = 2
     StopLevel = 3
     WinMenu = 4
-    GameOverManu = 5
-    Exit = 6
+    GameOverMenu = 5
+    NextLevel = 6
+    Exit = 7
 
 
 class LevelState(Enum):

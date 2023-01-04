@@ -8,7 +8,7 @@ class AbstractBonus(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
         self.hit_box = self.rect.copy()
-        # у каждого наследника должен быть
+        # У каждого наследника должен быть
         # этот атрибут. По его значению будут вычисляться коллизии
 
     def update(self):
@@ -26,7 +26,7 @@ class Crystal(AbstractBonus):
 
 class CrystalCounter:
     def __init__(self, x, y, count_crystals, crystal_image):
-        self.count_crystals = count_crystals
+        self._count_crystals = count_crystals
         self.collected_crystals = 0
         self.image = crystal_image
         self.x = x
@@ -39,7 +39,7 @@ class CrystalCounter:
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
         text = self.font.render(
-            f"{self.collected_crystals}/{self.count_crystals}",
+            f"{self.collected_crystals}/{self._count_crystals}",
             True,
             pygame.color.Color("black"),
         )
