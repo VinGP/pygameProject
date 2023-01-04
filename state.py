@@ -9,7 +9,8 @@ class GameState(Enum):
     WinMenu = 4
     GameOverMenu = 5
     NextLevel = 6
-    Exit = 7
+    ReplayLevel = 7
+    Exit = 8
 
 
 class LevelState(Enum):

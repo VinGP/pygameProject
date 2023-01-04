@@ -20,9 +20,9 @@ pygame.display.set_caption(GAME_TITLE)
 JUMP_POWER = 15
 GRAVITY = 0.6
 
-FPS = 77
+FPS = 75
 
-HERO_SPEED = 7  # Скорость передвижения героя
+HERO_SPEED = 6.9  # Скорость передвижения героя
 
 ANIMATION_COOLDOWN = 100  # Частота обновления анимации
 
@@ -30,6 +30,12 @@ LEVEL_BACKGROUND_IMAGE = "background\\background_level_2.png"
 
 MENU_BACKGROUND_IMAGE = "background\\background_menu.png"
 
-FONT = pygame.font.SysFont("Roboto", 100)
+FONT = pygame.font.SysFont("Roboto", 75)
 
 TEXT_SIZE = 32
+
+TextButton_TEXT_COLOR = pygame.Color((0, 102, 204))
+TextButton_TEXT_COLOR_MOUSE_MOTION = pygame.Color((51, 153, 255))
+
+LevelButton_BACGROUND_COLOR = pygame.Color((0, 102, 204, 128))
+LevelButton_BACGROUND_COLOR_MOUSE_MOTION = pygame.Color((51, 153, 255, 128))

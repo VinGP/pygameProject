@@ -41,8 +41,8 @@ class Game:
                 self.win_menu.render(events)
 
         if self.state in (
-            GameState.GameOverMenu,
-            GameState.MainMenu,
+                GameState.GameOverMenu,
+                GameState.MainMenu,
         ):
             self.main_menu.render(events)
 
@@ -51,6 +51,10 @@ class Game:
                 self.level_menu.render(events)
             else:
                 self.level_menu = LevelMenu(self)
+
+        if self.state == GameState.ReplayLevel:
+            self.set_level(self.current_level_id)
+            self.state = GameState.PlayLevel
 
         if self.state == GameState.NextLevel:
             self.set_level(self.current_level_id + 1)

@@ -68,8 +68,8 @@ class LevelMenu(AbstractMenu):
         n = 0
         for i in range(((self.button_width + self.spacing) * len(levels) // WIDTH) + 1):
             for j in range(
-                (WIDTH - self.margin_left - self.margin_right)
-                // (self.button_width + self.spacing)
+                    (WIDTH - self.margin_left - self.margin_right)
+                    // (self.button_width + self.spacing)
             ):
                 LevelButton(
                     self.margin_left + (self.button_width + self.spacing) * j,
@@ -117,7 +117,7 @@ class WinMenu(AbstractMenu):
         self.margin_top = 15
 
         buttons = [
-            {"text": "Пройти ещё раз", "state": GameState.PlayLevel},
+            {"text": "Пройти ещё раз", "state": GameState.ReplayLevel},
         ]
 
         try:
@@ -208,7 +208,8 @@ class AbstractButton(pygame.sprite.Sprite):
 
 
 class TextButton(AbstractButton):
-    def __init__(self, x, y, state, text, group):
+    def __init__(self, x, y, state, text, group, button_text_color=TextButton_TEXT_COLOR,
+                 button_text_color_mouse_motion=TextButton_TEXT_COLOR_MOUSE_MOTION, font=FONT):
         """
         :param x: координата центра кнопки
         :param y: координата центра кнопки
@@ -216,12 +217,16 @@ class TextButton(AbstractButton):
         :param text: текст на кнопке
         :param group: группа кнопок
         """
+
         self.text = text
-        self.font = FONT
+        self.font = font
+        self.default_color_text = button_text_color
+        self.mouse_motion_color_text = button_text_color_mouse_motion
+        self.color_text = self.default_color_text
         self.button_text = self.font.render(
             self.text,
             True,
-            pygame.color.Color("black"),
+            self.color_text,
         )
 
         self.state = state  # Состояние игры на которое переносит эта кнопка
@@ -233,15 +238,11 @@ class TextButton(AbstractButton):
         )
         self.image.blit(self.button_text, (0, 0))
 
-        self.default_color_text = "black"
-        self.mouse_motion_color_text = "red"
-        self.color_text = self.default_color_text
-
     def update_color(self):
         self.button_text = self.font.render(
             self.text,
             True,
-            pygame.color.Color(self.color_text),
+            self.color_text,
         )
         self.image = pygame.Surface(self.button_text.get_size(), pygame.SRCALPHA, 32)
         self.image.blit(self.button_text, (0, 0))
@@ -260,7 +261,8 @@ class LevelButton(AbstractButton):
     star_good = load_image(r"star\star_good.png")
     star_bad = load_image(r"star\star_bad.png")
 
-    def __init__(self, x, y, width, height, group, state, level_data):
+    def __init__(self, x, y, width, height, group, state, level_data, button_color=LevelButton_BACGROUND_COLOR,
+                 mouse_motion_button_color=LevelButton_BACGROUND_COLOR_MOUSE_MOTION):
         super().__init__(x, y, width, height, group)
         self.state = state  # Состояние игры на которое переносит эта кнопка
         self.level_id = level_data.id
@@ -269,23 +271,25 @@ class LevelButton(AbstractButton):
 
         self.button_text = FONT.render(self.text, True, pygame.Color("black"))
 
+        self.star_size = min(self.image.get_width() // 3, self.image.get_height() - self.button_text.get_height())
+
         self.star_bad = pygame.transform.scale(
             self.star_bad,
             (
-                self.image.get_width() // 3,
-                self.image.get_height() - self.button_text.get_height(),
+                self.star_size,
+                self.star_size,
             ),
         )
         self.star_good = pygame.transform.scale(
             self.star_good,
             (
-                self.image.get_width() // 3,
-                self.image.get_height() - self.button_text.get_height(),
+                self.star_size,
+                self.star_size,
             ),
         )
 
-        self.default_button_color = (0, 128, 0, 128)
-        self.mouse_motion_button_color = (0, 0, 128, 128)
+        self.default_button_color = button_color
+        self.mouse_motion_button_color = mouse_motion_button_color
         self.button_color = self.default_button_color
         self.render()
 
@@ -302,7 +306,8 @@ class LevelButton(AbstractButton):
                     self.star_good,
                     (
                         self.image.get_width() // 3 * i,
-                        self.button_text.get_height() - 6,
+                        self.image.get_height() - self.star_good.get_height() - (
+                                self.image.get_height() - self.button_text.get_height() - self.star_good.get_height()) // 2,
                     ),
                 )
             else:
@@ -310,7 +315,8 @@ class LevelButton(AbstractButton):
                     self.star_bad,
                     (
                         self.image.get_width() // 3 * i,
-                        self.button_text.get_height() - 6,
+                        self.image.get_height() - self.star_bad.get_height() - (
+                                self.image.get_height() - self.button_text.get_height() - self.star_bad.get_height()) // 2,
                     ),
                 )
 
