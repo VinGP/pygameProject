@@ -1,3 +1,5 @@
+import pygame
+
 from constants import *
 from tools import load_image
 from state import GameState
@@ -57,9 +59,26 @@ class LevelMenu(AbstractMenu):
 
         self.button_width, self.button_height = 100, 100
         self.margin_right = 20
-        self.margin_top = 20 + self.title.get_height()
+        self.margin_top = 20
         self.margin_left = 20
         self.spacing = 10
+
+        f = pygame.font.SysFont("Robot", 50)
+        t = f.render("Назад", True, TextButton_TEXT_COLOR)
+        w = t.get_width()
+        h = t.get_height()
+        TextButton(
+            self.margin_left + w // 2,
+            self.margin_top + h // 2,
+            GameState.MainMenu,
+            "Назад",
+            self.buttons,
+            button_text_color_mouse_motion=pygame.Color("green"),
+            button_text_color=pygame.Color("forestgreen"),
+            font=f,
+        )
+
+        self.margin_top += self.title.get_height()
 
         n = 0
         for i in range(((self.button_width + self.spacing) * len(levels) // WIDTH) + 1):
@@ -90,7 +109,8 @@ class LevelMenu(AbstractMenu):
                     if button.check_click(*pygame.mouse.get_pos()):
                         self.game.set_state(button.state)
                         self.game.level_menu = None
-                        self.game.set_level(button.level_id)
+                        if isinstance(button, LevelButton):
+                            self.game.set_level(button.level_id)
             elif event.type == pygame.MOUSEMOTION:
                 for button in self.buttons:
                     button.mouse_motion(*pygame.mouse.get_pos())
@@ -100,34 +120,16 @@ class LevelMenu(AbstractMenu):
         self.buttons.draw(SCREEN)
 
 
-class WinMenu(AbstractMenu):
+class EndLevel(AbstractMenu):
     star_good = load_image(r"star\star_good.png")
     star_bad = load_image(r"star\star_bad.png")
 
-    def __init__(self, game, level_id, level_result):
+    def __init__(self, game, level_result, buttons, title):
         super().__init__(game)
-        self.title = FONT.render(f"Уровень {level_id} завершён!", True, (34, 139, 34))
+        self.title = FONT.render(title, True, (34, 139, 34))
 
         self.stars = level_result
         self.margin_top = 15
-
-        buttons = [
-            {"text": "Пройти ещё раз", "state": GameState.ReplayLevel},
-        ]
-
-        try:
-            next_level = self.game.db.get_level(level_id + 1)
-            buttons.append({"text": "Следующий уровень", "state": GameState.NextLevel})
-        except Exception:
-            pass
-
-        buttons.extend(
-            [
-                {"text": "Все уровни", "state": GameState.LevelMenu},
-                {"text": "Главное меню", "state": GameState.MainMenu},
-                {"text": "Выйти", "state": GameState.Exit},
-            ]
-        )
 
         margin = self.margin_top + self.title.get_height()
 
@@ -151,6 +153,7 @@ class WinMenu(AbstractMenu):
                     if button.check_click(*pygame.mouse.get_pos()):
                         self.game.set_state(button.state)
                         self.game.win_menu = None
+                        self.game.lose_menu = None
 
             elif event.type == pygame.MOUSEMOTION:
                 for button in self.buttons:
@@ -183,8 +186,41 @@ class WinMenu(AbstractMenu):
         self.buttons.draw(SCREEN)
 
 
-class GameOverMenu(AbstractMenu):
-    pass
+class WinMenu(EndLevel):
+    def __init__(self, game, level_id, level_result):
+        buttons = [
+            {"text": "Пройти ещё раз", "state": GameState.ReplayLevel},
+        ]
+        self.game = game
+
+        try:
+            next_level = self.game.db.get_level(level_id + 1)
+            buttons.append({"text": "Следующий уровень", "state": GameState.NextLevel})
+        except Exception:
+            pass
+
+        buttons.extend(
+            [
+                {"text": "Все уровни", "state": GameState.LevelMenu},
+                # {"text": "Главное меню", "state": GameState.MainMenu},
+                {"text": "Выйти", "state": GameState.Exit},
+            ]
+        )
+        super().__init__(
+            game, level_result, buttons, title=f"Уровень {level_id} завершён!"
+        )
+
+
+class LoseMenu(EndLevel):
+    def __init__(self, game):
+        buttons = [
+            {"text": "Попробовать ещё раз", "state": GameState.ReplayLevel},
+            {"text": "Все уровни", "state": GameState.LevelMenu},
+            # {"text": "Главное меню", "state": GameState.MainMenu},
+            {"text": "Выйти", "state": GameState.Exit},
+        ]
+
+        super().__init__(game, level_result=0, buttons=buttons, title="Вы проиграли!")
 
 
 class AbstractButton(pygame.sprite.Sprite):

@@ -1,6 +1,6 @@
 from constants import *
 from level import Level
-from menu import MainMenu, LevelMenu, WinMenu
+from menu import MainMenu, LevelMenu, WinMenu, LoseMenu
 from state import GameState, LevelState
 from data_base import DataBase
 
@@ -15,6 +15,7 @@ class Game:
         self.level_menu = None
         self.db = DataBase()
         self.win_menu = None
+        self.lose_menu = None
 
     def check_state(self, events):
         if self.state == GameState.PlayLevel:
@@ -30,7 +31,7 @@ class Game:
                     )
                     self.state = GameState.WinMenu
                 elif level_state == LevelState.Lose:
-                    self.state = GameState.GameOverMenu
+                    self.state = GameState.LoseMenu
 
         if self.state == GameState.WinMenu:
             if not self.win_menu:
@@ -40,10 +41,13 @@ class Game:
             else:
                 self.win_menu.render(events)
 
-        if self.state in (
-                GameState.GameOverMenu,
-                GameState.MainMenu,
-        ):
+        if self.state == GameState.LoseMenu:
+            if not self.lose_menu:
+                self.lose_menu = LoseMenu(self)
+            else:
+                self.lose_menu.render(events)
+
+        if self.state == GameState.MainMenu:
             self.main_menu.render(events)
 
         if self.state == GameState.LevelMenu:
@@ -86,5 +90,4 @@ class Game:
             self.check_state(events)
             clock.tick(FPS)
             pygame.display.flip()
-
         pygame.quit()

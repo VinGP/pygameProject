@@ -7,7 +7,7 @@ class GameState(Enum):
     PlayLevel = 2
     StopLevel = 3
     WinMenu = 4
-    GameOverMenu = 5
+    LoseMenu = 5
     NextLevel = 6
     ReplayLevel = 7
     Exit = 8
