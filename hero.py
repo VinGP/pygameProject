@@ -4,6 +4,7 @@ import os
 
 from state import LevelState
 from tools import load_image, T
+from sounds import *
 
 
 class Hero(pygame.sprite.Sprite):
