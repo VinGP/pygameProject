@@ -3,6 +3,7 @@ from level import Level
 from menu import MainMenu, LevelMenu, WinMenu, LoseMenu
 from state import GameState, LevelState
 from data_base import DataBase
+from sounds import play_music
 
 
 class Game:
@@ -82,6 +83,7 @@ class Game:
 
     def run(self):
         clock = pygame.time.Clock()
+        play_music()
         while self.running:
             events = pygame.event.get()
             for event in events:
