@@ -111,12 +111,15 @@ class Hero(pygame.sprite.Sprite):
             if self.onGround:
                 self.yvel = -JUMP_POWER
         if self.spike_jump:
+            sound_ground(0)
             self.yvel = -JUMP_POWER
 
         if self.on_stairs:
             if self.moving_up:
+                sound_stairs(1)
                 self.yvel = -self.speed
             elif self.moving_down:
+                sound_stairs(1)
                 self.yvel = self.speed
             else:
                 self.yvel = 0
@@ -157,6 +160,7 @@ class Hero(pygame.sprite.Sprite):
                 )
                 self.hit_box.midbottom = self.rect.midbottom
                 self.health.health -= 1
+                sound_water()
 
         for lava in self.level.lava_group:
             if self.hit_box.colliderect(lava.hit_box):
@@ -165,6 +169,7 @@ class Hero(pygame.sprite.Sprite):
                 )
                 self.hit_box.midbottom = self.rect.midbottom
                 self.health.health -= 1
+                sound_lava()
 
         for spikes in self.level.spikes_group:
             if self.hit_box.colliderect(spikes.hit_box):
@@ -172,6 +177,7 @@ class Hero(pygame.sprite.Sprite):
                     break
                 self.spike_jump = True
                 self.health.health -= 0.5
+                sound_spike()
                 break
         else:
             self.spike_jump = False
@@ -184,11 +190,13 @@ class Hero(pygame.sprite.Sprite):
         for crystal in self.level.crystal_group:
             if self.hit_box.colliderect(crystal.hit_box):
                 self.level.crystal_counter.collect_crystal()
+                sound_crystal()
                 crystal.kill()
 
         for finish in self.level.finish_group:
             if self.hit_box.colliderect(finish.hit_box):
                 self.level.state = LevelState.Win
+                sound_finish()
 
     def update_action(self):
         if not self.onGround and not self.on_stairs:
