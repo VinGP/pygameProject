@@ -62,10 +62,40 @@ class DataBase:
         )
         self.con.commit()
 
+    def add_level(self, level_id, map_path, crystal_count):
+        q_check = f"""
+                select id from level where id=?
+                """
+        check = self.cur.execute(q_check, (level_id,)).fetchall()
+        if check:
+            print("[ERROR] Такой уровень уже существует!")
+            s = input("Перезаписать уровень? yes/no: ")
+            if s.lower() == "yes":
+                delete_q = """
+                           DELETE from level
+                           WHERE id = ?
+                           """
+                self.cur.execute(delete_q, (level_id,))
+                delete_q = """
+                            DELETE from user_level_progress
+                            WHERE level_id = ?
+                            """
+                self.cur.execute(delete_q, (level_id,))
+                self.con.commit()
+            else:
+                return
+        insert = """
+                insert into level(id, map_path, crystal_count) VALUES (?, ?, ?);
+                """
+        self.cur.execute(insert, (level_id, map_path, crystal_count))
+        insert = """
+                insert into user_level_progress(level_id, stars) VALUES (?, ?);
+                """
+        self.cur.execute(insert, (level_id, 0))
+        self.con.commit()
+        print("[INFO] Готово!")
+
 
 if __name__ == "__main__":
     db = DataBase()
-    print(db.get_all_level_user_progress())
-    print(db.get_level(1))
-    db.update_user_level_progress(1, 2)
-    print(db.get_all_level_user_progress())
+    db.add_level(3, r"data\map3.tmx", 10)

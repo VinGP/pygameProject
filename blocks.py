@@ -73,13 +73,13 @@ class Finish(AbstractSprite):
 
 class Saw(AbstractSprite):
     def __init__(
-            self,
-            image,
-            x,
-            y,
-            sprite_groups: list[pygame.sprite.Group],
-            animation_cooldown=ANIMATION_COOLDOWN,
-            rotation_angle=SAW_ROTATION_ANGLE,
+        self,
+        image,
+        x,
+        y,
+        sprite_groups: list[pygame.sprite.Group],
+        animation_cooldown=ANIMATION_COOLDOWN,
+        rotation_angle=SAW_ROTATION_ANGLE,
     ):
         self.orig_img = image
         super().__init__(image, x, y, sprite_groups)
