@@ -95,7 +95,29 @@ class DataBase:
         self.con.commit()
         print("[INFO] Готово!")
 
+    def remove_progress(self):
+        q = """
+            select id from level
+        """
+        levels_id = self.cur.execute(q).fetchall()
+        for level_id in levels_id:
+            update = """
+                            UPDATE user_level_progress
+                            SET stars = ?
+                            where level_id = ?
+                            """
+            self.cur.execute(
+                update,
+                (
+                    0,
+                    *level_id,
+                ),
+            )
+        self.con.commit()
+        print("[INFO] Прогресс сброшен")
+
 
 if __name__ == "__main__":
     db = DataBase()
-    db.add_level(3, r"data\map3.tmx", 10)
+    # db.add_level(3, r"data\map3.tmx", 10)
+    db.remove_progress()
