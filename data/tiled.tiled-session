@@ -7,28 +7,29 @@
     "expandedProjectPaths": [
         "."
     ],
+    "file.lastUsedOpenFilter": "Все файлы (*)",
     "fileStates": {
         "map.tmx": {
             "scale": 0.25,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 882,
-                "y": 4894
+                "x": 1918,
+                "y": 3198
             }
         },
         "map2.tmx": {
-            "scale": 0.37406249999999996,
+            "scale": 0.33,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 961.0693400167086,
-                "y": 640.2673350041772
+                "x": 983.3333333333334,
+                "y": 689.3939393939394
             }
         },
         "map_test_cam.tmx": {
             "scale": 0.37406249999999996,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 961.0693400167086,
+                "x": 1043.9431913116123,
                 "y": 640.2673350041772
             }
         },
@@ -39,9 +40,12 @@
     },
     "frame.defaultDuration": 40,
     "last.imagePath": "D:/MyProjects/pygameProject/data/block",
+    "map.fixedSize": true,
+    "map.height": 100,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 64,
     "map.tileWidth": 64,
+    "map.width": 100,
     "openFiles": [
         "map.tmx",
         "platformPack_tilesheet.tsx",

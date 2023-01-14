@@ -160,8 +160,9 @@ class Hero(pygame.sprite.Sprite):
                     -(self.rect.x - self.t.rect.x), -(self.rect.y - self.t.rect.y)
                 )
                 self.hit_box.midbottom = self.rect.midbottom
-                self.health.health -= 1
+                self.health.health -= water.damage
                 sound_water()
+                break
 
         for lava in self.level.lava_group:
             if self.hit_box.colliderect(lava.hit_box):
@@ -169,15 +170,16 @@ class Hero(pygame.sprite.Sprite):
                     -(self.rect.x - self.t.rect.x), -(self.rect.y - self.t.rect.y)
                 )
                 self.hit_box.midbottom = self.rect.midbottom
-                self.health.health -= 1
+                self.health.health -= lava.damage
                 sound_lava()
+                break
 
-        for spikes in self.level.spikes_group:
-            if self.hit_box.colliderect(spikes.hit_box):
+        for spike in self.level.spikes_group:
+            if self.hit_box.colliderect(spike.hit_box):
                 if self.spike_jump:
                     break
                 self.spike_jump = True
-                self.health.health -= 0.5
+                self.health.health -= spike.damage
                 sound_spike()
                 break
         else:
@@ -198,6 +200,15 @@ class Hero(pygame.sprite.Sprite):
             if self.hit_box.colliderect(finish.hit_box):
                 self.level.state = LevelState.Win
                 sound_finish()
+
+        for saw in self.level.saw_group:
+            if self.hit_box.colliderect(saw.hit_box):
+                self.rect.move_ip(
+                    -(self.rect.x - self.t.rect.x), -(self.rect.y - self.t.rect.y)
+                )
+                self.hit_box.midbottom = self.rect.midbottom
+                self.health.health -= saw.damage
+                break
 
     def update_action(self):
         if not self.onGround and not self.on_stairs:

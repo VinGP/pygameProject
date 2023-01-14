@@ -1,4 +1,6 @@
-import pygame
+import pygame.transform
+
+from constants import *
 
 
 class AbstractSprite(pygame.sprite.Sprite):
@@ -27,6 +29,7 @@ class Water(AbstractSprite):
 
     def __init__(self, x, y, img, sprite_groups):
         super().__init__(img, x, y, sprite_groups)
+        self.damage = WATER_DAMAGE
 
 
 class Lava(AbstractSprite):
@@ -34,6 +37,7 @@ class Lava(AbstractSprite):
 
     def __init__(self, x, y, img, sprite_groups):
         super().__init__(img, x, y, sprite_groups)
+        self.damage = LAVA_DAMAGE
 
 
 class Spikes(AbstractSprite):
@@ -48,6 +52,7 @@ class Spikes(AbstractSprite):
             self.image.get_height() // 2,
         )
         self.hit_box.bottom = self.rect.bottom
+        self.damage = SPIKES_DAMAGE
 
 
 class Stairs(AbstractSprite):
@@ -64,3 +69,47 @@ class Finish(AbstractSprite):
 
     def update(self):
         self.hit_box.center = self.rect.center
+
+
+class Saw(AbstractSprite):
+    def __init__(
+            self,
+            image,
+            x,
+            y,
+            sprite_groups: list[pygame.sprite.Group],
+            animation_cooldown=ANIMATION_COOLDOWN,
+            rotation_angle=SAW_ROTATION_ANGLE,
+    ):
+        self.orig_img = image
+        super().__init__(image, x, y, sprite_groups)
+        self.hit_box = self.rect.inflate(-8, -8)
+        self.update_time = pygame.time.get_ticks()
+        self.animation_cooldown = animation_cooldown
+        self.rotation_angle = rotation_angle
+        self.angle = 0
+        self.damage = SAW_DAMAGE
+
+    @staticmethod
+    def rotate(image, rect, angle):
+        """Rotate the image while keeping its center."""
+        # Rotate the original image without modifying it.
+        new_image = pygame.transform.rotate(image, angle)
+        # Get a new rect with the center of the old rect.
+        rect = new_image.get_rect(center=rect.center)
+        return new_image, rect
+
+    def update(self):
+        self.update_animation()
+        self.hit_box.center = self.rect.center
+        # self.draw()
+
+    def draw(self):
+        pygame.draw.rect(SCREEN, (255, 0, 0), self.hit_box, 2)
+        pygame.draw.rect(SCREEN, (0, 255, 0), self.rect, 2)
+
+    def update_animation(self):
+        if pygame.time.get_ticks() - self.update_time > self.animation_cooldown:
+            self.angle += self.rotation_angle
+            self.image, self.rect = self.rotate(self.orig_img, self.rect, self.angle)
+            self.angle %= 360

@@ -24,6 +24,7 @@ class Level:
         self.lava_group = pygame.sprite.Group()
         self.crystal_group = pygame.sprite.Group()
         self.finish_group = pygame.sprite.Group()
+        self.saw_group = pygame.sprite.Group()
 
         self.crystal_counter = None
 
@@ -106,6 +107,13 @@ class Level:
                             y=y * TILE_SIZE,
                             image=img,
                             sprite_groups=[self.all_sprites, self.finish_group],
+                        )
+                    elif id in SAW_ID:
+                        Saw(
+                            x=x * TILE_SIZE,
+                            y=y * TILE_SIZE,
+                            image=img,
+                            sprite_groups=[self.all_sprites, self.saw_group],
                         )
 
     def check_state(self):

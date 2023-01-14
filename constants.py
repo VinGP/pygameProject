@@ -10,6 +10,7 @@ LAVA_ID = (6, 20)
 STAIRS_ID = (57, 58)
 CRYSTAL_ID = (36, 37, 38, 39, 50, 51, 52, 53)
 FINISH_ID = (76, 90)
+SAW_ID = (11, 12, 25, 26, 72)
 
 GAME_TITLE = "pygameProject"
 
@@ -39,3 +40,10 @@ TextButton_TEXT_COLOR_MOUSE_MOTION = pygame.Color((51, 153, 255))
 
 LevelButton_BACGROUND_COLOR = pygame.Color((0, 102, 204, 128))
 LevelButton_BACGROUND_COLOR_MOUSE_MOTION = pygame.Color((51, 153, 255, 128))
+
+SAW_ROTATION_ANGLE = 10
+
+SAW_DAMAGE = 0.75
+SPIKES_DAMAGE = 0.5
+LAVA_DAMAGE = 1
+WATER_DAMAGE = 1
