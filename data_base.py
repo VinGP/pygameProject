@@ -120,4 +120,4 @@ class DataBase:
 if __name__ == "__main__":
     db = DataBase()
     # db.add_level(3, r"data\map3.tmx", 10)
-    db.remove_progress()
+    # db.remove_progress()
