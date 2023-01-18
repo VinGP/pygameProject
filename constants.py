@@ -1,4 +1,5 @@
 import pygame
+from win32api import GetSystemMetrics
 
 pygame.init()
 
@@ -14,7 +15,9 @@ SAW_ID = (11, 12, 25, 26, 72)
 
 GAME_TITLE = "pygameProject"
 
-SIZE = WIDTH, HEIGHT = 1300, 700
+# SIZE = WIDTH, HEIGHT = 1300, 700
+SIZE = WIDTH, HEIGHT = GetSystemMetrics(0)-20, GetSystemMetrics(1)-50
+
 SCREEN = pygame.display.set_mode(SIZE)
 pygame.display.set_caption(GAME_TITLE)
 
@@ -34,6 +37,8 @@ MENU_BACKGROUND_IMAGE = "background\\background_menu.png"
 FONT = pygame.font.SysFont("Roboto", 75)
 
 TEXT_SIZE = 32
+
+Title_COLOR = pygame.Color((34, 139, 34))
 
 TextButton_TEXT_COLOR = pygame.Color((0, 102, 204))
 TextButton_TEXT_COLOR_MOUSE_MOTION = pygame.Color((51, 153, 255))

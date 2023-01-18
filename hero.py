@@ -244,5 +244,5 @@ class Hero(pygame.sprite.Sprite):
                     self.animation_list[self.action]
                 )
 
-            if self.moving_left:
+            if self.xvel < 0:
                 self.image = pygame.transform.flip(self.image, True, False)

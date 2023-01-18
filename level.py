@@ -28,7 +28,7 @@ class Level:
 
         self.crystal_counter = None
 
-        self.crystal_counter_img = load_image(r"Bonuses\Crystal\0.png")
+        self.crystal_counter_img = load_image(r"bonuses\Crystal\0.png")
 
         self.load_level()
         self.count_all_crystal = count_crystals
@@ -123,6 +123,15 @@ class Level:
     def get_state(self):
         return self.state
 
+    def pause_level(self):
+        self.state = LevelState.Pause
+        self.hero.moving_left = False
+        self.hero.moving_right = False
+        self.hero.moving_up = False
+
+    def run_level(self):
+        self.state = LevelState.Run
+
     def get_result(self):
         if self.crystal_counter.collected_crystals == self.count_all_crystal:
             return 3
@@ -140,6 +149,7 @@ class Level:
                     self.hero.moving_left = True
                 if event.key == pygame.K_d:
                     self.hero.moving_right = True
+                    # self.hero.moving_left = False
                 if event.key == pygame.K_w:
                     self.hero.moving_up = True
                 if event.key == pygame.K_s:

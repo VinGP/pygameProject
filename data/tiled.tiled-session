@@ -3,33 +3,41 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "map2.tmx",
+    "activeFile": "map.tmx",
     "expandedProjectPaths": [
         "."
     ],
     "file.lastUsedOpenFilter": "Все файлы (*)",
     "fileStates": {
         "map.tmx": {
-            "scale": 0.25,
+            "scale": 0.125,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1918,
-                "y": 3198
+                "x": 2108,
+                "y": 3788
             }
         },
         "map2.tmx": {
             "scale": 0.33,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 983.3333333333334,
-                "y": 689.3939393939394
+                "x": 962.1212121212122,
+                "y": 640.9090909090909
+            }
+        },
+        "map3.tmx": {
+            "scale": 0.11221874999999999,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 3203.564466722362,
+                "y": 4317.460317460318
             }
         },
         "map_test_cam.tmx": {
             "scale": 0.37406249999999996,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1043.9431913116123,
+                "x": 961.0693400167086,
                 "y": 640.2673350041772
             }
         },
@@ -50,14 +58,16 @@
         "map.tmx",
         "platformPack_tilesheet.tsx",
         "map_test_cam.tmx",
-        "map2.tmx"
+        "map2.tmx",
+        "map3.tmx"
     ],
     "project": "tiled.tiled-project",
     "recentFiles": [
-        "map.tmx",
-        "platformPack_tilesheet.tsx",
+        "map3.tmx",
+        "map2.tmx",
         "map_test_cam.tmx",
-        "map2.tmx"
+        "platformPack_tilesheet.tsx",
+        "map.tmx"
     ],
     "resizeMap.removeObjects": true,
     "tileset.lastUsedFormat": "tsx",

@@ -5,7 +5,7 @@ class GameState(Enum):
     MainMenu = 0
     LevelMenu = 1
     PlayLevel = 2
-    StopLevel = 3
+    PauseLevel = 3
     WinMenu = 4
     LoseMenu = 5
     NextLevel = 6
@@ -17,3 +17,4 @@ class LevelState(Enum):
     Run = 0
     Win = 1
     Lose = 2
+    Pause = 3

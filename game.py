@@ -1,6 +1,6 @@
 from constants import *
 from level import Level
-from menu import MainMenu, LevelMenu, WinMenu, LoseMenu
+from menu import MainMenu, LevelMenu, WinMenu, LoseMenu, PauseLevelMenu
 from state import GameState, LevelState
 from data_base import DataBase
 from sounds import play_music
@@ -17,8 +17,18 @@ class Game:
         self.db = DataBase()
         self.win_menu = None
         self.lose_menu = None
+        self.pause_level_menu = None
 
     def check_state(self, events):
+        if self.state == GameState.PauseLevel:
+            if not self.pause_level_menu:
+                self.pause_level_menu = PauseLevelMenu(self)
+                self.level.pause_level()
+            else:
+                self.pause_level_menu.render(events)
+
+        else:
+            self.pause_level_menu = None
         if self.state == GameState.PlayLevel:
             if self.level is None:
                 self.set_level(self.current_level_id)
@@ -26,6 +36,8 @@ class Game:
                 level_state = self.level.get_state()
                 if level_state == LevelState.Run:
                     self.level.render(events)
+                elif level_state == LevelState.Pause:
+                    self.level.run_level()
                 elif level_state == LevelState.Win:
                     self.db.update_user_level_progress(
                         self.current_level_id, self.level.get_result()
@@ -89,6 +101,15 @@ class Game:
             for event in events:
                 if event.type == pygame.QUIT:
                     self.running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        if self.state == GameState.PlayLevel:
+                            self.state = GameState.PauseLevel
+                        elif self.state == GameState.PauseLevel:
+                            self.state = GameState.PlayLevel
+                            self.pause_level_menu = None
+                            self.level.run_level()
+                            self.pause_level_menu = None
             self.check_state(events)
             clock.tick(FPS)
             pygame.display.flip()
