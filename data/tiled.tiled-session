@@ -13,24 +13,32 @@
             "scale": 0.125,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 2108,
-                "y": 3788
+                "x": 1908,
+                "y": 2492
             }
         },
         "map2.tmx": {
             "scale": 0.33,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 962.1212121212122,
+                "x": 965.1515151515152,
                 "y": 640.9090909090909
             }
         },
         "map3.tmx": {
-            "scale": 0.11221874999999999,
+            "scale": 0.33,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 3203.564466722362,
-                "y": 4317.460317460318
+                "x": 468.181818181818,
+                "y": 5480.30303030303
+            }
+        },
+        "map4.tmx": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 3022,
+                "y": 2782
             }
         },
         "map_test_cam.tmx": {
@@ -48,7 +56,7 @@
     },
     "frame.defaultDuration": 40,
     "last.imagePath": "D:/MyProjects/pygameProject/data/block",
-    "map.fixedSize": true,
+    "map.fixedSize": false,
     "map.height": 100,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 64,

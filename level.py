@@ -30,6 +30,8 @@ class Level:
 
         self.crystal_counter_img = load_image(r"bonuses\Crystal\0.png")
 
+        self.h_x, self.h_y = 0, 0
+
         self.load_level()
         self.count_all_crystal = count_crystals
         self.crystal_counter = CrystalCounter(
@@ -39,8 +41,8 @@ class Level:
         self.hero = Hero(
             level=self,
             animation_pictures_folder="hero",
-            x=TILE_SIZE,
-            y=(self.height - 3) * TILE_SIZE - TILE_SIZE,
+            x=self.h_x,
+            y=self.h_y,
             speed=HERO_SPEED,
             animation_cooldown=ANIMATION_COOLDOWN,
         )
@@ -115,6 +117,8 @@ class Level:
                             image=img,
                             sprite_groups=[self.all_sprites, self.saw_group],
                         )
+                    elif id == 68:
+                        self.h_x, self.h_y = x * TILE_SIZE, y * TILE_SIZE
 
     def check_state(self):
         if not self.hero.is_alive():
