@@ -149,25 +149,21 @@ class Level:
         SCREEN.blit(self.background, (0, 0))
         for event in events:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_a:
+                if event.key in (pygame.K_a, pygame.K_LEFT):
                     self.hero.moving_left = True
-                if event.key == pygame.K_d:
+                if event.key in (pygame.K_d, pygame.K_RIGHT):
                     self.hero.moving_right = True
                     # self.hero.moving_left = False
-                if event.key == pygame.K_w:
+                if event.key in (pygame.K_w, pygame.K_SPACE, pygame.K_UP):
                     self.hero.moving_up = True
-                if event.key == pygame.K_s:
-                    self.hero.moving_down = True
 
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_a:
+                if event.key in (pygame.K_a, pygame.K_LEFT):
                     self.hero.moving_left = False
-                if event.key == pygame.K_d:
+                if event.key in (pygame.K_d, pygame.K_RIGHT):
                     self.hero.moving_right = False
-                if event.key == pygame.K_w:
+                if event.key in (pygame.K_w, pygame.K_SPACE, pygame.K_UP):
                     self.hero.moving_up = False
-                if event.key == pygame.K_s:
-                    self.hero.moving_down = False
 
         # изменяем ракурс камеры
         self.camera.update(self.hero)

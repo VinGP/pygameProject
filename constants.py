@@ -24,7 +24,7 @@ pygame.display.set_caption(GAME_TITLE)
 JUMP_POWER = 15
 GRAVITY = 0.6
 
-FPS = 75
+FPS = 72
 
 HERO_SPEED = 6.9  # Скорость передвижения героя
 
