@@ -1,3 +1,5 @@
+import pygame
+
 from camera import Camera
 import pytmx
 from blocks import *
@@ -156,6 +158,10 @@ class Level:
                     # self.hero.moving_left = False
                 if event.key in (pygame.K_w, pygame.K_SPACE, pygame.K_UP):
                     self.hero.moving_up = True
+                if event.key == pygame.K_s:
+                    self.hero.moving_down = True
+                if event.key in (pygame.K_s, pygame.K_DOWN):
+                    self.hero.moving_down = True
 
             if event.type == pygame.KEYUP:
                 if event.key in (pygame.K_a, pygame.K_LEFT):
@@ -164,6 +170,8 @@ class Level:
                     self.hero.moving_right = False
                 if event.key in (pygame.K_w, pygame.K_SPACE, pygame.K_UP):
                     self.hero.moving_up = False
+                if event.key in (pygame.K_s, pygame.K_DOWN):
+                    self.hero.moving_down = False
 
         # изменяем ракурс камеры
         self.camera.update(self.hero)

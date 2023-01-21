@@ -79,8 +79,8 @@ class LevelMenu(AbstractMenu):
         n = 0
         for i in range(((self.button_width + self.spacing) * len(levels) // WIDTH) + 1):
             for j in range(
-                    (WIDTH - self.margin_left - self.margin_right)
-                    // (self.button_width + self.spacing)
+                (WIDTH - self.margin_left - self.margin_right)
+                // (self.button_width + self.spacing)
             ):
                 LevelButton(
                     self.margin_left + (self.button_width + self.spacing) * j,
@@ -257,15 +257,15 @@ class AbstractButton(pygame.sprite.Sprite):
 
 class TextButton(AbstractButton):
     def __init__(
-            self,
-            x,
-            y,
-            state,
-            text,
-            group,
-            button_text_color=TextButton_TEXT_COLOR,
-            button_text_color_mouse_motion=TextButton_TEXT_COLOR_MOUSE_MOTION,
-            font=FONT,
+        self,
+        x,
+        y,
+        state,
+        text,
+        group,
+        button_text_color=TextButton_TEXT_COLOR,
+        button_text_color_mouse_motion=TextButton_TEXT_COLOR_MOUSE_MOTION,
+        font=FONT,
     ):
         """
         :param x: координата центра кнопки
@@ -319,16 +319,16 @@ class LevelButton(AbstractButton):
     star_bad = load_image(r"star\star_bad.png")
 
     def __init__(
-            self,
-            x,
-            y,
-            width,
-            height,
-            group,
-            state,
-            level_data,
-            button_color=LevelButton_BACGROUND_COLOR,
-            mouse_motion_button_color=LevelButton_BACGROUND_COLOR_MOUSE_MOTION,
+        self,
+        x,
+        y,
+        width,
+        height,
+        group,
+        state,
+        level_data,
+        button_color=LevelButton_BACGROUND_COLOR,
+        mouse_motion_button_color=LevelButton_BACGROUND_COLOR_MOUSE_MOTION,
     ):
         super().__init__(x, y, width, height, group)
         self.state = state  # Состояние игры на которое переносит эта кнопка
@@ -379,9 +379,9 @@ class LevelButton(AbstractButton):
                         self.image.get_height()
                         - self.star_good.get_height()
                         - (
-                                self.image.get_height()
-                                - self.button_text.get_height()
-                                - self.star_good.get_height()
+                            self.image.get_height()
+                            - self.button_text.get_height()
+                            - self.star_good.get_height()
                         )
                         // 2,
                     ),
@@ -394,9 +394,9 @@ class LevelButton(AbstractButton):
                         self.image.get_height()
                         - self.star_bad.get_height()
                         - (
-                                self.image.get_height()
-                                - self.button_text.get_height()
-                                - self.star_bad.get_height()
+                            self.image.get_height()
+                            - self.button_text.get_height()
+                            - self.star_bad.get_height()
                         )
                         // 2,
                     ),

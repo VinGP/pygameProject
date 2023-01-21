@@ -16,7 +16,7 @@ SAW_ID = (11, 12, 25, 26, 72)
 GAME_TITLE = "pygameProject"
 
 # SIZE = WIDTH, HEIGHT = 1300, 700
-SIZE = WIDTH, HEIGHT = GetSystemMetrics(0)-20, GetSystemMetrics(1)-50
+SIZE = WIDTH, HEIGHT = GetSystemMetrics(0) - 20, GetSystemMetrics(1) - 50
 
 SCREEN = pygame.display.set_mode(SIZE)
 pygame.display.set_caption(GAME_TITLE)
