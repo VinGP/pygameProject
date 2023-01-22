@@ -21,6 +21,8 @@ SIZE = WIDTH, HEIGHT = GetSystemMetrics(0) - 20, GetSystemMetrics(1) - 50
 SCREEN = pygame.display.set_mode(SIZE)
 pygame.display.set_caption(GAME_TITLE)
 
+pygame.display.set_icon(pygame.image.load("icon.png"))
+
 JUMP_POWER = 15
 GRAVITY = 0.6
 
@@ -34,7 +36,7 @@ LEVEL_BACKGROUND_IMAGE = "background\\background_level_2.png"
 
 MENU_BACKGROUND_IMAGE = "background\\background_menu.png"
 
-FONT = pygame.font.SysFont("Roboto", 50)
+FONT = pygame.font.SysFont("Roboto", 58)
 
 TEXT_SIZE = 15
 

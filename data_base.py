@@ -23,7 +23,8 @@ class DataBase:
 
     def get_all_level_user_progress(self) -> list[UserLevelProgress]:
         q = """
-            select level_id, stars from user_level_progress;
+            select level_id, stars from user_level_progress
+            ORDER BY level_id;
             """
 
         res = self.cur.execute(q).fetchall()
@@ -63,6 +64,7 @@ class DataBase:
         self.con.commit()
 
     def add_level(self, level_id, map_path, crystal_count):
+        map_path = "data\\maps\\" + map_path
         q_check = f"""
                 select id from level where id=?
                 """
@@ -119,8 +121,8 @@ class DataBase:
 
 if __name__ == "__main__":
     db = DataBase()
-    db.add_level(1, r"data\maps\map1.tmx", 10)
-    db.add_level(2, r"data\maps\map2.tmx", 23)
-    db.add_level(3, r"data\maps\map3.tmx", 23)
+    # db.add_level(1, r"map1.tmx", 10)
+    # db.add_level(2, r"map2.tmx", 23)
+    # db.add_level(3, r"map3.tmx", 23)
 
     # db.remove_progress()
