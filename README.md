@@ -2,6 +2,8 @@
 
 Gameboy adventure - простой 2D платформер, для практики разработки игр на Python 
 
+![](https://github.com/Your_Repository_Name/Your_GIF_Name.gif)
+
 ## Запуск игры (Windows):
 Чтобы запустить игру, выполните файл `game.exe` (двойной клик)
 

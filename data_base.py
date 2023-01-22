@@ -121,7 +121,7 @@ class DataBase:
 
 if __name__ == "__main__":
     db = DataBase()
-    # db.add_level(1, r"map1.tmx", 10)
+    # db.add_level(1, r"map1.tmx", 4)
     # db.add_level(2, r"map2.tmx", 23)
     # db.add_level(3, r"map3.tmx", 23)
 
