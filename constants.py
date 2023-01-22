@@ -13,7 +13,7 @@ CRYSTAL_ID = (36, 37, 38, 39, 50, 51, 52, 53)
 FINISH_ID = (76, 90)
 SAW_ID = (11, 12, 25, 26, 72)
 
-GAME_TITLE = "pygameProject"
+GAME_TITLE = "Gameboy adventure"
 
 # SIZE = WIDTH, HEIGHT = 1300, 700
 SIZE = WIDTH, HEIGHT = GetSystemMetrics(0) - 20, GetSystemMetrics(1) - 50
@@ -34,9 +34,9 @@ LEVEL_BACKGROUND_IMAGE = "background\\background_level_2.png"
 
 MENU_BACKGROUND_IMAGE = "background\\background_menu.png"
 
-FONT = pygame.font.SysFont("Roboto", 75)
+FONT = pygame.font.SysFont("Roboto", 50)
 
-TEXT_SIZE = 32
+TEXT_SIZE = 15
 
 Title_COLOR = pygame.Color((34, 139, 34))
 
