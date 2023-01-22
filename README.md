@@ -8,3 +8,6 @@
 4. Активация виртуального окружения: `.\venv\Scripts\activate`
 5. Установка требований: `python -m pip install -r requirements.txt`
 6. Запуск игры: `python main.py`
+
+### Управление
+A/

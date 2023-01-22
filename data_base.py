@@ -119,5 +119,8 @@ class DataBase:
 
 if __name__ == "__main__":
     db = DataBase()
-    # db.add_level(5, r"data\map5.tmx", 23)
+    db.add_level(1, r"data\maps\map1.tmx", 10)
+    db.add_level(2, r"data\maps\map2.tmx", 23)
+    db.add_level(3, r"data\maps\map3.tmx", 23)
+
     # db.remove_progress()
