@@ -1,6 +1,6 @@
 from data_base import DataBase
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         id = int(input("Номер уровня: "))
         count_crystal = int(input("Количество кристаллов: "))
